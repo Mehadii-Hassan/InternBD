@@ -1,0 +1,18 @@
+"use client";
+
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { AdSlot } from "@/components/AdSlot";
+
+export default function ThemeWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+      <Navbar />
+      <AdSlot placement="header" />
+      <main>{children}</main>
+      <Footer />
+      <AdSlot placement="footer" />
+    </NextThemesProvider>
+  );
+}
