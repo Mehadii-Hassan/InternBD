@@ -4,6 +4,7 @@ import { SAMPLE_INTERNSHIPS } from "@/data/internships";
 import { ShareButtons } from "@/components/ShareButtons";
 import { FakeReportWidget } from "@/components/FakeReportWidget";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { AdSlot } from "@/components/AdSlot";
 import Link from "next/link";
 import { Mail, MapPin, Clock, Link as LinkIcon, Play, CheckCircle, Loader2 } from "lucide-react";
 
@@ -29,6 +30,7 @@ export default function InternshipDetailPage({ params }: { params: { id: string 
   if (!internship) {
     notFound();
   }
+  if (!internship) throw new Error("not found");
 
   const applyUrl = internship.applyLink || `mailto:${internship.applyEmail}`;
   const isEmail = !!internship.applyEmail && !internship.applyLink;

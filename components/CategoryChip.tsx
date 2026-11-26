@@ -1,19 +1,31 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import {
+  Code2,
+  Megaphone,
+  Palette,
+  Banknote,
+  Users,
+  Building2,
+  CircuitBoard,
+  FileText,
+  HardHat,
+  Briefcase,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Software/IT": "💻",
-  Marketing: "📢",
-  Design: "🎨",
-  Finance: "💰",
-  HR: "👥",
-  Business: "📊",
-  "Data/AI": "🤖",
-  "Content Writing": "✍️",
-  Engineering: "🔧",
-  Others: "📦",
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  "Software/IT": Code2,
+  Marketing: Megaphone,
+  Design: Palette,
+  Finance: Banknote,
+  HR: Users,
+  Business: Building2,
+  "Data/AI": CircuitBoard,
+  "Content Writing": FileText,
+  Engineering: HardHat,
+  Others: Briefcase,
 };
 
 interface CategoryChipProps {
@@ -23,16 +35,19 @@ interface CategoryChipProps {
 }
 
 export function CategoryChip({ category, active = false, count }: CategoryChipProps) {
+  const Icon = CATEGORY_ICONS[category] || Briefcase;
+
   return (
     <Link
-      href={`/?category=${encodeURIComponent(category)}`}
-      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+      href={`/internships?category=${encodeURIComponent(category)}`}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
         active
-          ? "bg-primary-600 text-white"
-          : "bg-secondary text-foreground/80 hover:bg-primary-600 hover:text-white"
-      }`}
+          ? "bg-primary text-primary-foreground"
+          : "bg-secondary text-foreground/60 hover:bg-primary hover:text-primary-foreground"
+      )}
     >
-      <span>{CATEGORY_ICONS[category] || "📦"}</span>
+      <Icon className="w-3 h-3" />
       {category}
       {count !== undefined && <span className="ml-1">{count}</span>}
     </Link>

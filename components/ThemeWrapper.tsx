@@ -12,7 +12,7 @@ export default function ThemeWrapper({ children }: { children: React.ReactNode }
       <AdSlot placement="header" />
       <main>{children}</main>
       <Footer />
-      <AdSlot placement="footer" />
+      <AdSlot placement="detail" />
     </NextThemesProvider>
   );
 }
