@@ -142,7 +142,7 @@ CREATE POLICY "Public can read companies"
   TO anon, authenticated
   USING (true);
 
--- Reports: public can insert (anyone can report)
+-- Reports: public can insert (anyone can report), but NOT publicly readable (contains ip_hash)
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public can insert reports"
@@ -150,27 +150,11 @@ CREATE POLICY "Public can insert reports"
   TO anon, authenticated
   WITH CHECK (true);
 
--- Public can read reports (for admin, but really only service role should read)
-CREATE POLICY "Public can read reports"
-  ON reports FOR SELECT
-  TO anon, authenticated
-  USING (true);
-
--- Scrape runs: public can read
+-- Scrape runs: RLS enabled, no public policies (service role only)
 ALTER TABLE scrape_runs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public can read scrape runs"
-  ON scrape_runs FOR SELECT
-  TO anon, authenticated
-  USING (true);
-
--- Scrape sources: public can read
+-- Scrape sources: RLS enabled, no public policies (service role only)
 ALTER TABLE scrape_sources ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Public can read scrape sources"
-  ON scrape_sources FOR SELECT
-  TO anon, authenticated
-  USING (true);
 
 -- ============================================================
 -- 5. SEED DATA: 30 Sample Internships (source = 'manual', is_sample = true)
@@ -247,7 +231,7 @@ INSERT INTO internships (
   (gen_random_uuid(), 'Finance Analyst Intern', 'CapitalGrow Finance', 'capitalgrow-finance', NULL, 'careers@capitalgrow.com',
    'Finance', 'Finance', 'Dhaka', 'Dhaka', 'On-site', 'Paid', '৳12,000 - ৳18,000/month', '6 months',
    '2026-12-25', 'Finance Analyst Intern position at CapitalGrow Finance. Work on financial analysis, reporting, and budgeting for our corporate clients.',
-   ARRAY["Bachelor's in Finance or Accounting", 'Advanced Excel skills', 'Understanding of financial statements', 'Attention to detail'],
+   ARRAY['Bachelor''s in Finance or Accounting', 'Advanced Excel skills', 'Understanding of financial statements', 'Attention to detail'],
    ARRAY['Prepare financial reports', 'Analyze budget variances', 'Assist with audits', 'Support finance team'],
    NULL, 'careers@capitalgrow.com',
    'manual', 'CapitalGrow Finance', NULL, 'approved', TRUE, FALSE, TRUE,
