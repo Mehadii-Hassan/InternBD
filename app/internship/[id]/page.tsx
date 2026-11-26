@@ -11,6 +11,7 @@ import { AdSlot } from "@/components/AdSlot";
 import Link from "next/link";
 import { Mail, MapPin, Clock, Link as LinkIcon, Play, CheckCircle, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import type { Internship } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 1800; // 30 minutes ISR
 

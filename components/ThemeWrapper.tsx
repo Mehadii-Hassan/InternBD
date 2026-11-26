@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from 'react';
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";

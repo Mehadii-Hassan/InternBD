@@ -6,6 +6,8 @@ import { Mail } from "lucide-react";
 import { useState } from "react";
 
 export default function ReportPage({ params }: { params: { id: string } }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
     setSubmitting(true);

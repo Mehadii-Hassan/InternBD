@@ -5,6 +5,7 @@ import { Counter } from "@/components/Counter";
 import { CategoryChip } from "@/components/CategoryChip";
 import { InternshipCard } from "@/components/InternshipCard";
 import { AdSlot } from "@/components/AdSlot";
+import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
 import { SAMPLE_INTERNSHIPS, CATEGORIES, LOCATIONS, DEPARTMENTS, STATS } from "@/data/internships";

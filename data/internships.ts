@@ -8,7 +8,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "1",
     title: "Frontend Developer Intern",
-    company: "DevSoft Bangladesh",
+    company_name: "DevSoft Bangladesh",
     logo: "",
     location: "Dhaka" as Location,
     category: "Software/IT" as Category,
@@ -29,7 +29,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "2",
     title: "Digital Marketing Intern",
-    company: "BrandBoost Ltd.",
+    company_name: "BrandBoost Ltd.",
     logo: "",
     location: "Chattogram" as Location,
     category: "Marketing" as Category,
@@ -50,7 +50,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "3",
     title: "UI/UX Design Intern",
-    company: "PixelCraft Studio",
+    company_name: "PixelCraft Studio",
     logo: "",
     location: "Dhaka" as Location,
     category: "Design" as Category,
@@ -71,7 +71,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "4",
     title: "Finance Analyst Intern",
-    company: "CapitalGrow Finance",
+    company_name: "CapitalGrow Finance",
     logo: "",
     location: "Dhaka" as Location,
     category: "Finance" as Category,
@@ -92,7 +92,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "5",
     title: "HR Operations Intern",
-    company: "TalentBridge HR",
+    company_name: "TalentBridge HR",
     logo: "",
     location: "Remote" as Location,
     category: "HR" as Category,
@@ -113,7 +113,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "6",
     title: "Business Development Intern",
-    company: "GrowBD Solutions",
+    company_name: "GrowBD Solutions",
     logo: "",
     location: "Dhaka" as Location,
     category: "Business" as Category,
@@ -134,7 +134,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "7",
     title: "Data Analyst Intern",
-    company: "InsightData BD",
+    company_name: "InsightData BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Data/AI" as Category,
@@ -155,7 +155,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "8",
     title: "Content Writing Intern",
-    company: "WordCraft Media",
+    company_name: "WordCraft Media",
     logo: "",
     location: "Remote" as Location,
     category: "Content Writing" as Category,
@@ -176,7 +176,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "9",
     title: "Civil Engineering Intern",
-    company: "BuildRight Construction",
+    company_name: "BuildRight Construction",
     logo: "",
     location: "Chattogram" as Location,
     category: "Engineering" as Category,
@@ -197,7 +197,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "10",
     title: "Backend Developer Intern",
-    company: "CodeCrafters BD",
+    company_name: "CodeCrafters BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Software/IT" as Category,
@@ -218,7 +218,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "11",
     title: "Graphic Design Intern",
-    company: "VisualImpact Agency",
+    company_name: "VisualImpact Agency",
     logo: "",
     location: "Dhaka" as Location,
     category: "Design" as Category,
@@ -239,7 +239,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "12",
     title: "AI/ML Intern",
-    company: "NeuroTech BD",
+    company_name: "NeuroTech BD",
     logo: "",
     location: "Remote" as Location,
     category: "Data/AI" as Category,
@@ -260,7 +260,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "13",
     title: "Social Media Intern",
-    company: "TrendSetter Media",
+    company_name: "TrendSetter Media",
     logo: "",
     location: "Dhaka" as Location,
     category: "Marketing" as Category,
@@ -281,7 +281,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "14",
     title: "Accounting Intern",
-    company: "LedgerPro Accounting",
+    company_name: "LedgerPro Accounting",
     logo: "",
     location: "Sylhet" as Location,
     category: "Finance" as Category,
@@ -302,7 +302,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "15",
     title: "Recruitment Intern",
-    company: "HireRight BD",
+    company_name: "HireRight BD",
     logo: "",
     location: "Remote" as Location,
     category: "HR" as Category,
@@ -323,7 +323,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "16",
     title: "Project Management Intern",
-    company: "AgileFlow Solutions",
+    company_name: "AgileFlow Solutions",
     logo: "",
     location: "Dhaka" as Location,
     category: "Business" as Category,
@@ -344,7 +344,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "17",
     title: "Copywriter Intern",
-    company: "AdEcho Agency",
+    company_name: "AdEcho Agency",
     logo: "",
     location: "Dhaka" as Location,
     category: "Content Writing" as Category,
@@ -365,7 +365,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "18",
     title: "Electrical Engineering Intern",
-    company: "PowerGrid BD",
+    company_name: "PowerGrid BD",
     logo: "",
     location: "Khulna" as Location,
     category: "Engineering" as Category,
@@ -386,7 +386,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "19",
     title: "Full Stack Developer Intern",
-    company: "TechHub Bangladesh",
+    company_name: "TechHub Bangladesh",
     logo: "",
     location: "Dhaka" as Location,
     category: "Software/IT" as Category,
@@ -407,7 +407,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "20",
     title: "Brand Strategy Intern",
-    company: "BrandLogic BD",
+    company_name: "BrandLogic BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Marketing" as Category,
@@ -428,7 +428,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "21",
     title: "Mobile App Developer Intern",
-    company: "AppNinja BD",
+    company_name: "AppNinja BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Software/IT" as Category,
@@ -449,7 +449,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "22",
     title: "Financial Planning Intern",
-    company: "WealthWise BD",
+    company_name: "WealthWise BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Finance" as Category,
@@ -470,7 +470,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "23",
     title: "Technical Writer Intern",
-    company: "DocuTech BD",
+    company_name: "DocuTech BD",
     logo: "",
     location: "Remote" as Location,
     category: "Content Writing" as Category,
@@ -491,7 +491,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "24",
     title: "Mechanical Engineering Intern",
-    company: "Machina Industries",
+    company_name: "Machina Industries",
     logo: "",
     location: "Chattogram" as Location,
     category: "Engineering" as Category,
@@ -512,7 +512,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "25",
     title: "Product Management Intern",
-    company: "ProductLab BD",
+    company_name: "ProductLab BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Business" as Category,
@@ -533,7 +533,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "26",
     title: "DevOps Intern",
-    company: "CloudScale BD",
+    company_name: "CloudScale BD",
     logo: "",
     location: "Remote" as Location,
     category: "Software/IT" as Category,
@@ -554,7 +554,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "27",
     title: "SEO Intern",
-    company: "RankUp Digital",
+    company_name: "RankUp Digital",
     logo: "",
     location: "Dhaka" as Location,
     category: "Marketing" as Category,
@@ -575,7 +575,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "28",
     title: "Video Editor Intern",
-    company: "FrameCraft Media",
+    company_name: "FrameCraft Media",
     logo: "",
     location: "Dhaka" as Location,
     category: "Content Writing" as Category,
@@ -596,7 +596,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "29",
     title: "Supply Chain Intern",
-    company: "LogiMove BD",
+    company_name: "LogiMove BD",
     logo: "",
     location: "Chattogram" as Location,
     category: "Business" as Category,
@@ -617,7 +617,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "30",
     title: "Cybersecurity Intern",
-    company: "SecureNet BD",
+    company_name: "SecureNet BD",
     logo: "",
     location: "Dhaka" as Location,
     category: "Software/IT" as Category,
