@@ -1,3 +1,4 @@
+import React from 'react';
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getInternshipById, getRelatedInternships } from "@/lib/actions/internships";
@@ -10,6 +11,8 @@ import { AdSlot } from "@/components/AdSlot";
 import Link from "next/link";
 import { Mail, MapPin, Clock, Link as LinkIcon, Play, CheckCircle, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import type { Internship } from "@/lib/types";
+
+export const revalidate = 1800; // 30 minutes ISR
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const resolvedParams = await params;

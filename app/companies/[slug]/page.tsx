@@ -1,3 +1,4 @@
+import React from 'react';
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Building2, MapPin, Clock } from "lucide-react";import { SAMPLE_INTERNSHIPS } from "@/data/internships";

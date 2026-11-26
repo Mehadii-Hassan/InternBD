@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from "next/link";
 import { Building2, Users } from "lucide-react";
 import { SAMPLE_INTERNSHIPS } from "@/data/internships";

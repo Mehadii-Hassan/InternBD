@@ -1,3 +1,4 @@
+import React from 'react';
 import { getAdminStats } from "@/lib/actions/admin";
 import { Users, Shield, FileText, Clock, AlertTriangle, BarChart3, Mail } from "lucide-react";
 
