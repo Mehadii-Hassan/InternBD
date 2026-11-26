@@ -3,19 +3,40 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSavedIds } from "@/lib/storage";
-import { SAMPLE_INTERNSHIPS } from "@/data/internships";
 import { InternshipCard } from "@/components/InternshipCard";
 import { Bookmark } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
+import { getInternshipById } from "@/lib/actions/internships";
 
 export default function SavedPage() {
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [savedInternships, setSavedInternships] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setSavedIds(getSavedIds());
   }, []);
 
-  const savedInternships = SAMPLE_INTERNSHIPS.filter((i) => savedIds.includes(i.id));
+  useEffect(() => {
+    async function loadSaved() {
+      if (savedIds.length === 0) {
+        setSavedInternships([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const internships = [];
+      for (const id of savedIds) {
+        const { internship, error } = await getInternshipById(id);
+        if (internship && !error) {
+          internships.push(internship);
+        }
+      }
+      setSavedInternships(internships);
+      setLoading(false);
+    }
+    loadSaved();
+  }, [savedIds]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,7 +48,13 @@ export default function SavedPage() {
           </p>
         </div>
 
-        {savedInternships.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-96 bg-muted rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : savedInternships.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
               <Bookmark className="w-10 h-10 text-muted-foreground" />
@@ -38,7 +65,7 @@ export default function SavedPage() {
             </p>
             <Link
               href="/"
-              className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               Browse internships
             </Link>

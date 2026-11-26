@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Image } from "next/image";
+import Image from "next/image";
 import { FramerMotion } from "@/components/FramerMotion";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { MapPin, Layers, CheckCircle2, ExternalLink } from "lucide-react";
+import { MapPin, Layers } from "lucide-react";
 import type { Internship } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -34,10 +34,10 @@ export function InternshipCard({ internship }: InternshipCardProps) {
     <FramerMotion className="group">
       <div className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col h-full">
         <div className="relative h-36 bg-muted">
-          {internship.logo ? (
+          {internship.company_logo_url ? (
             <Image
-              src={internship.logo}
-              alt={internship.company}
+              src={internship.company_logo_url}
+              alt={internship.company_name}
               className="absolute inset-0 w-full h-full object-cover"
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
@@ -47,17 +47,17 @@ export function InternshipCard({ internship }: InternshipCardProps) {
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-14 h-14 rounded-md bg-secondary flex items-center justify-center text-muted-foreground font-bold text-sm">
-                {getInitials(internship.company)}
+                {getInitials(internship.company_name)}
               </div>
             </div>
           )}
           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-            {internship.isNew && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-accent text-accent-foreground">
-                New
+            {internship.is_sample && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                Sample
               </span>
             )}
-            {internship.isVerified && (
+            {internship.is_verified && (
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-primary-foreground">
                 Verified
               </span>
@@ -74,17 +74,17 @@ export function InternshipCard({ internship }: InternshipCardProps) {
             <span
               className={cn(
                 "px-2 py-0.5 rounded text-[10px] font-medium",
-                internship.is_paid
+                internship.is_paid === "Paid"
                   ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                   : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
               )}
             >
-              {internship.is_paid ? "Paid" : "Unpaid"}
+              {internship.is_paid}
             </span>
             <span
               className="px-2 py-0.5 rounded text-[10px] font-medium bg-secondary text-foreground/60"
             >
-              {internship.workMode}
+              {internship.work_mode}
             </span>
           </div>
 
@@ -96,7 +96,7 @@ export function InternshipCard({ internship }: InternshipCardProps) {
               {internship.title}
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              {internship.company}
+              {internship.company_name}
             </p>
 
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-auto">

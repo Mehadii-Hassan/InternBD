@@ -42,33 +42,74 @@ export type Department =
 export type PaidStatus = "Paid" | "Unpaid";
 export type WorkMode = "On-site" | "Remote" | "Hybrid";
 export type Duration = "1 month" | "2 months" | "3 months" | "6 months" | "12 months";
+export type InternshipStatus = "pending" | "approved" | "rejected" | "expired";
+export type InternshipSource = "scraped" | "hr" | "manual";
 
 export interface Internship {
   id: string;
   title: string;
-  company: string;
-  logo?: string;
-  location: Location;
-  division?: string;
+  company_name: string;
+  company_slug: string | null;
+  company_logo_url: string | null;
+  company_email: string | null;
   category: Category;
-  department?: Department;
-  paidStatus: PaidStatus;
-  is_paid?: boolean;
-  workMode: WorkMode;
+  department: Department | null;
+  location: Location;
+  division: string | null;
+  work_mode: WorkMode;
+  is_paid: PaidStatus;
+  stipend: string | null;
   duration: Duration;
-  stipend: string;
   deadline: string;
-  isNew: boolean;
-  isVerified: boolean;
-  is_sample?: boolean;
-  source?: "scraped" | "hr" | "manual";
   description: string;
   requirements: string[];
   responsibilities: string[];
-  applyLink?: string;
-  applyEmail?: string;
-  postedAt: string;
-  benefits?: string[];
+  apply_link: string | null;
+  apply_email: string | null;
+  source: InternshipSource;
+  source_name: string | null;
+  source_url: string | null;
+  status: InternshipStatus;
+  is_verified: boolean;
+  is_featured: boolean;
+  is_sample: boolean;
+  report_count: number;
+  trust_score: number;
+  scraped_at: string | null;
+  created_at: string;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  slug: string;
+  website: string | null;
+  career_url: string | null;
+  logo_url: string | null;
+  is_trusted: boolean;
+  is_sample: boolean;
+  created_at: string;
+}
+
+export interface ScrapeRun {
+  id: string;
+  started_at: string;
+  finished_at: string | null;
+  source_name: string;
+  found: number;
+  inserted: number;
+  skipped_duplicates: number;
+  errors: number;
+  status: string;
+  created_at: string;
+}
+
+export interface Report {
+  id: string;
+  internship_id: string;
+  reason: string;
+  ip_hash: string;
+  created_at: string;
 }
 
 export const CATEGORIES: Category[] = [
@@ -125,6 +166,12 @@ export const DURATIONS: Duration[] = [
 
 export const PAID_STATUSES: PaidStatus[] = ["Paid", "Unpaid"];
 export const WORK_MODES: WorkMode[] = ["On-site", "Remote", "Hybrid"];
+export const INTERNSHIP_STATUSES: InternshipStatus[] = [
+  "pending",
+  "approved",
+  "rejected",
+  "expired",
+];
 
 export const LOCATION_LABELS: Record<Location, string> = {
   Dhaka: "Dhaka",

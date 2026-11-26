@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import type { MouseEvent } from "react";
-
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, Filter, X, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -11,27 +9,19 @@ import { Counter } from "@/components/Counter";
 import { CategoryChip } from "@/components/CategoryChip";
 import { InternshipCard } from "@/components/InternshipCard";
 import { AdSlot } from "@/components/AdSlot";
-import { SkeletonCard } from "@/components/SkeletonLoader";
-import {
-  SAMPLE_INTERNSHIPS,
-  CATEGORIES,
-  LOCATIONS,
-  DEPARTMENTS,
-  DURATIONS,
-  PAID_STATUSES,
-  WORK_MODES,
-} from "@/data/internships";
+import { getInternships, getFilterCounts } from "@/lib/actions/internships";
 import { cn } from "@/lib/utils";
+import type { MouseEvent } from "react";
 
 const PAGE_SIZE = 12;
 
 const FILTER_CONFIG = [
-  { key: "category", label: "Category", options: CATEGORIES },
-  { key: "location", label: "Location", options: LOCATIONS },
-  { key: "department", label: "Department", options: DEPARTMENTS },
-  { key: "paid", label: "Paid/Unpaid", options: PAID_STATUSES },
-  { key: "mode", label: "Work Mode", options: WORK_MODES },
-  { key: "duration", label: "Duration", options: DURATIONS },
+  { key: "category", label: "Category", options: [] as string[] },
+  { key: "location", label: "Location", options: [] as string[] },
+  { key: "department", label: "Department", options: [] as string[] },
+  { key: "paid", label: "Paid/Unpaid", options: ["Paid", "Unpaid"] },
+  { key: "mode", label: "Work Mode", options: ["On-site", "Remote", "Hybrid"] },
+  { key: "duration", label: "Duration", options: ["1 month", "2 months", "3 months", "6 months", "12 months"] },
 ];
 
 const SORT_OPTIONS = [
@@ -58,6 +48,12 @@ export default function InternshipsPage() {
   const pathname = usePathname();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filterCounts, setFilterCounts] = useState<{
+    categories: Record<string, number>;
+    locations: Record<string, number>;
+    departments: Record<string, number>;
+  } | null>(null);
 
   const query = searchParams.get("q") || "";
   const category = searchParams.get("category") || "";
@@ -83,81 +79,45 @@ export default function InternshipsPage() {
     { key: "posted", label: "Posted", value: posted },
   ].filter((f) => f.value && f.value !== "any");
 
-  const filtered = useMemo(() => {
-    let result = SAMPLE_INTERNSHIPS.filter((i) => {
-      const matchSearch =
-        i.title.toLowerCase().includes(query.toLowerCase()) ||
-        i.company.toLowerCase().includes(query.toLowerCase());
-      const matchCat = category ? i.category === category : true;
-      const matchLoc = location ? i.location === location : true;
-      const matchDept = department ? i.department === department : true;
-      const matchPaid = paid ? i.paidStatus === paid : true;
-      const matchMode = mode ? i.workMode === mode : true;
-      const matchDur = duration ? i.duration === duration : true;
+  const [internships, setInternships] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
 
-      let matchDeadline = true;
-      if (deadline !== "any") {
-        const d = new Date(i.deadline);
-        const now = new Date();
-        if (deadline === "week") {
-          matchDeadline = d <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        } else if (deadline === "month") {
-          matchDeadline = d <= new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        }
-      }
-
-      let matchPosted = true;
-      if (posted !== "any") {
-        const d = new Date(i.postedAt);
-        const now = new Date();
-        if (posted === "24h") {
-          matchPosted = d >= new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        } else if (posted === "7d") {
-          matchPosted = d >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        } else if (posted === "30d") {
-          matchPosted = d >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        }
-      }
-
-      let matchVerified = true;
-      if (verified) {
-        matchVerified = i.isVerified;
-      }
-
-      return (
-        matchSearch &&
-        matchCat &&
-        matchLoc &&
-        matchDept &&
-        matchPaid &&
-        matchMode &&
-        matchDur &&
-        matchDeadline &&
-        matchPosted &&
-        matchVerified
-      );
-    });
-
-    if (sort === "newest") {
-      result.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
-    } else if (sort === "deadline") {
-      result.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
-    } else if (sort === "stipend") {
-      result.sort((a, b) => {
-        const pa = parseInt(a.stipend.replace(/[^\d]/g, ""));
-        const pb = parseInt(b.stipend.replace(/[^\d]/g, ""));
-        return (pb || 0) - (pa || 0);
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await getInternships({
+        search: query || undefined,
+        category: category || undefined,
+        location: location || undefined,
+        department: department || undefined,
+        paid: paid || undefined,
+        mode: mode || undefined,
+        duration: duration || undefined,
+        deadline: deadline || undefined,
+        posted: posted || undefined,
+        verified,
+        sort,
+        page,
+        limit: PAGE_SIZE,
       });
+      setInternships(result.internships || []);
+      setTotal(result.total || 0);
+    } finally {
+      setIsLoading(false);
     }
+  }, [query, category, location, department, paid, mode, duration, deadline, posted, verified, sort, page]);
 
-    return result;
-  }, [
-    query, category, location, department, paid, mode, duration,
-    deadline, posted, verified, sort,
-  ]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => {
+    getFilterCounts().then((result) => {
+      setFilterCounts(result);
+    });
+  }, []);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   function setQueryParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -221,7 +181,7 @@ export default function InternshipsPage() {
 
         <div className="mb-6">
           <p className="text-sm font-medium text-foreground">
-            {filtered.length} internship{filtered.length !== 1 ? "s" : ""} found
+            {total} internship{total !== 1 ? "s" : ""} found
           </p>
         </div>
 
@@ -229,9 +189,10 @@ export default function InternshipsPage() {
           <div className="flex flex-wrap gap-2 mb-6">
             <span className="text-xs font-medium text-muted-foreground">Active filters:</span>
             {activeFilters.map((f) => (
-              <Link
-                key={`${f.key}-${f.value}`}
-                onClick={(e: MouseEvent) => {
+                <Link
+                  key={`${f.key}-${f.value}`}
+                  href="#"
+                  onClick={(e: MouseEvent) => {
                   e.preventDefault();
                   removeFilter(f.key);
                 }}
@@ -258,56 +219,65 @@ export default function InternshipsPage() {
                 category, location, department, paid, mode, duration, deadline, posted, verified, sort,
               }}
               onChange={setQueryParam}
+              filterCounts={filterCounts}
             />
             <AdSlot placement="sidebar" className="mt-8" />
           </aside>
 
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginated.length > 0 ? (
-                paginated.map((internship) => (
-                  <InternshipCard key={internship.id} internship={internship} />
-                ))
-              ) : (
-                <div className="lg:col-span-3 text-center py-20">
-                  <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mx-auto mb-6">
-                    <Search className="w-10 h-10 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium text-foreground mb-2">No internships found</h3>
-                  <p className="text-muted-foreground mb-8">
-                    Try adjusting your filters or search terms to see more results.
-                  </p>
-                  <button
-                    onClick={clearAllFilters}
-                    className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                  >
-                    Clear all filters
-                  </button>
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-96 bg-muted rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : internships.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {internships.map((internship) => (
+                    <InternshipCard key={internship.id} internship={internship} />
+                  ))}
                 </div>
-              )}
-            </div>
 
-            {paginated.length > 0 && totalPages > 1 && (
-              <div className="mt-10 flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
+                {totalPages > 1 && (
+                  <div className="mt-10 flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Page {page} of {totalPages}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setQueryParam("page", String(Math.max(1, page - 1)))}
+                        disabled={page <= 1}
+                        className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-medium disabled:opacity-50 disabled:pointer-events-none hover:bg-secondary transition-colors"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setQueryParam("page", String(Math.min(totalPages, page + 1)))}
+                        disabled={page >= totalPages}
+                        className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-medium disabled:opacity-50 disabled:pointer-events-none hover:bg-secondary transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="lg:col-span-3 text-center py-20">
+                <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setQueryParam("page", String(Math.max(1, page - 1)))}
-                    disabled={page <= 1}
-                    className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-medium disabled:opacity-50 disabled:pointer-events-none hover:bg-secondary transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setQueryParam("page", String(Math.min(totalPages, page + 1)))}
-                    disabled={page >= totalPages}
-                    className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-medium disabled:opacity-50 disabled:pointer-events-none hover:bg-secondary transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
+                <h3 className="text-lg font-medium text-foreground mb-2">No internships found</h3>
+                <p className="text-muted-foreground mb-8">
+                  Try adjusting your filters or search terms to see more results.
+                </p>
+                <button
+                  onClick={clearAllFilters}
+                  className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                >
+                  Clear all filters
+                </button>
               </div>
             )}
           </div>
@@ -333,6 +303,7 @@ export default function InternshipsPage() {
                 category, location, department, paid, mode, duration, deadline, posted, verified, sort,
               }}
               onChange={setQueryParam}
+              filterCounts={filterCounts}
             />
             <div className="mt-6 pt-6 border-t">
               <button
@@ -360,6 +331,7 @@ export default function InternshipsPage() {
 function FilterSidebar({
   current,
   onChange,
+  filterCounts,
 }: {
   current: {
     category: string;
@@ -374,7 +346,22 @@ function FilterSidebar({
     sort: string;
   };
   onChange: (key: string, value: string) => void;
+  filterCounts: {
+    categories: Record<string, number>;
+    locations: Record<string, number>;
+    departments: Record<string, number>;
+  } | null;
 }) {
+  const categoryOptions = filterCounts?.categories
+    ? Object.entries(filterCounts.categories).map(([cat, count]) => ({ name: cat, count }))
+    : [];
+  const locationOptions = filterCounts?.locations
+    ? Object.entries(filterCounts.locations).map(([loc, count]) => ({ name: loc, count }))
+    : [];
+  const departmentOptions = filterCounts?.departments
+    ? Object.entries(filterCounts.departments).map(([dept, count]) => ({ name: dept, count }))
+    : [];
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
@@ -388,32 +375,155 @@ function FilterSidebar({
         />
       </div>
 
-      {FILTER_CONFIG.map((field) => (
-        <div key={field.key} className="space-y-3">
-          <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
-            {field.label}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {field.options.map((opt) => {
-              const isSelected = current[field.key as keyof typeof current] === String(opt);
-              return (
-                <button
-                  key={String(opt)}
-                  onClick={() => onChange(field.key, isSelected ? "" : String(opt))}
-                  className={cn(
-                    "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
-                    isSelected
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "border-border bg-background hover:bg-secondary text-foreground/60"
-                  )}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Category
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {categoryOptions.map(({ name, count }) => {
+            const isSelected = current.category === name;
+            return (
+              <button
+                key={name}
+                onClick={() => onChange("category", isSelected ? "" : name)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {name} <span className="text-[10px] opacity-60">({count})</span>
+              </button>
+            );
+          })}
         </div>
-      ))}
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Location
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {locationOptions.map(({ name, count }) => {
+            const isSelected = current.location === name;
+            return (
+              <button
+                key={name}
+                onClick={() => onChange("location", isSelected ? "" : name)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {name} <span className="text-[10px] opacity-60">({count})</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Department
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {departmentOptions.map(({ name, count }) => {
+            const isSelected = current.department === name;
+            return (
+              <button
+                key={name}
+                onClick={() => onChange("department", isSelected ? "" : name)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {name} <span className="text-[10px] opacity-60">({count})</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Paid/Unpaid
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FILTER_CONFIG[3].options.map((opt) => {
+            const isSelected = current.paid === opt;
+            return (
+              <button
+                key={opt}
+                onClick={() => onChange("paid", isSelected ? "" : opt)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Work Mode
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FILTER_CONFIG[4].options.map((opt) => {
+            const isSelected = current.mode === opt;
+            return (
+              <button
+                key={opt}
+                onClick={() => onChange("mode", isSelected ? "" : opt)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">
+          Duration
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FILTER_CONFIG[5].options.map((opt) => {
+            const isSelected = current.duration === opt;
+            return (
+              <button
+                key={opt}
+                onClick={() => onChange("duration", isSelected ? "" : opt)}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs font-medium border transition-colors",
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-border bg-background hover:bg-secondary text-foreground/60"
+                )}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="space-y-3">
         <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider text-bangla">

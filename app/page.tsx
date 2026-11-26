@@ -1,42 +1,24 @@
-"use client";
-
-import { useState, useMemo } from "react";
-import { Search, MapPin, Building2, Clock, ArrowRight, Play } from "lucide-react";
-import Link from "next/link";
-
+import { getInternships, getStats } from "@/lib/actions/internships";
 import { Counter } from "@/components/Counter";
 import { CategoryChip } from "@/components/CategoryChip";
 import { InternshipCard } from "@/components/InternshipCard";
 import { AdSlot } from "@/components/AdSlot";
-import { SkeletonCard } from "@/components/SkeletonLoader";
-import { Footer } from "@/components/Footer";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
-  SAMPLE_INTERNSHIPS,
   CATEGORIES,
   LOCATIONS,
   DEPARTMENTS,
-  STATS,
-} from "@/data/internships";
+} from "@/lib/types";
 
-export default function HomePage() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [department, setDepartment] = useState("");
-  const [view, setView] = useState<"latest" | "category" | "location" | "department">("latest");
+export default async function HomePage() {
+  const { internships, total } = await getInternships({
+    sort: "newest",
+    page: 1,
+    limit: 9,
+  });
 
-  const filtered = useMemo(() => {
-    return SAMPLE_INTERNSHIPS.filter((i) => {
-      const matchSearch =
-        i.title.toLowerCase().includes(search.toLowerCase()) ||
-        i.company.toLowerCase().includes(search.toLowerCase());
-      const matchCat = category ? i.category === category : true;
-      const matchLoc = location ? i.location === location : true;
-      const matchDept = department ? i.department === department : true;
-      return matchSearch && matchCat && matchLoc && matchDept;
-    });
-  }, [search, category, location, department]);
+  const stats = await getStats();
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,71 +35,28 @@ export default function HomePage() {
             </p>
 
             <div
-              className={cn(
-                "bg-card border border-border rounded-xl p-1 shadow-xl flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto",
-                "transition-all duration-200"
-              )}
+              className="bg-card border border-border rounded-xl p-1 shadow-xl flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto"
             >
-              <div className="flex-1 relative">
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
-                />
+              <div className="flex-1 relative relative">
                 <input
                   type="text"
                   placeholder="Search by keyword, company, or title..."
                   className="w-full pl-10 pr-4 py-3.5 rounded-lg border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="px-4 py-3.5 rounded-lg border border-border bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
-                <option value="">All Categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="px-4 py-3.5 rounded-lg border border-border bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
-                <option value="">All Locations</option>
-                {LOCATIONS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="px-4 py-3.5 rounded-lg border border-border bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
-                <option value="">All Departments</option>
-                {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-              <button
+              <Link
+                href="/internships"
                 className="px-6 py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center gap-2 whitespace-nowrap"
               >
-                <Search className="w-4 h-4" /> Search
-              </button>
+                Browse Internships <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
-          </div>
 
-          <div className="mt-12 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
-            <Counter value={STATS.totalInternships} label="Total Internships" />
-            <Counter value={STATS.totalCompanies} label="Companies" />
-            <Counter value={STATS.newToday} label="Added Today" />
+            <div className="mt-12 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+              <Counter value={stats.totalInternships} label="Total Internships" />
+              <Counter value={stats.totalCompanies} label="Companies" />
+              <Counter value={stats.newToday} label="Added Today" />
+            </div>
           </div>
         </div>
       </section>
@@ -129,7 +68,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-2xl font-bold text-foreground text-bangla mb-1">Latest Internships</h2>
               <p className="text-sm text-muted-foreground">
-                {filtered.length} opportunity{filtered.length !== 1 ? "s" : ""} available
+                {total} opportunity{total !== 1 ? "s" : ""} available
               </p>
             </div>
             <Link
@@ -140,29 +79,18 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {filtered.length === 0 ? (
+          {internships.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-muted-foreground" />
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
               </div>
               <h3 className="text-lg font-medium text-foreground mb-2">No internships found</h3>
               <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setCategory("");
-                  setLocation("");
-                  setDepartment("");
-                }}
-                className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-              >
-                Clear all filters
-              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((internship) => (
-                <InternshipCard key={internship.id} internship={internship} />
+              {internships.map((internship) => (
+                <InternshipCard key={internship.id} internship={internship as any} />
               ))}
             </div>
           )}
@@ -194,9 +122,7 @@ export default function HomePage() {
               <Link
                 key={loc}
                 href={`/internships?location=${encodeURIComponent(loc)}`}
-                className={cn(
-                  "flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-secondary hover:border-primary transition-colors group"
-                )}
+                className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">
                   {loc}
@@ -219,9 +145,7 @@ export default function HomePage() {
               <Link
                 key={dept}
                 href={`/internships?department=${encodeURIComponent(dept)}`}
-                className={cn(
-                  "flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-secondary hover:border-primary transition-colors group"
-                )}
+                className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">
                   {dept}
@@ -245,22 +169,25 @@ export default function HomePage() {
               {
                 title: "Search",
                 desc: "Find internships by category, location, or department.",
-                icon: Search,
               },
               {
                 title: "Apply",
                 desc: "Click through to the company website to apply directly.",
-                icon: Building2,
               },
               {
                 title: "Track",
                 desc: "Save internships you like and track deadlines.",
-                icon: Clock,
               },
             ].map((step, i) => (
               <div key={step.title} className="text-center">
                 <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-4 text-foreground/60">
-                  <step.icon className="w-5 h-5" />
+                  {i === 0 ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  ) : i === 1 ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 3a1 1 0 011 1v6h10a1 1 0 110 2H4v6a1 1 0 01-1 1H1a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2z"></path></svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" stroke="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  )}
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.desc}</p>
@@ -284,7 +211,8 @@ export default function HomePage() {
               href="/post"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
             >
-              <Play className="w-4 h-4" /> Post a Free Internship
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Post a Free Internship
             </Link>
           </div>
         </div>
@@ -292,7 +220,32 @@ export default function HomePage() {
 
       <AdSlot placement="between-cards" />
 
-      <Footer />
+      <footer className="border-t mt-auto">
+        <div className="px-4 py-12 lg:px-8 max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-2 text-bangla font-bold text-lg tracking-tight">
+              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+                IB
+              </div>
+              <span className="text-inter">Intern<span className="text-primary">BD</span></span>
+            </div>
+            <div className="flex gap-8 text-sm text-foreground/60">
+              <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+              <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
+              <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
+              <Link href="/post" className="hover:text-foreground transition-colors">Post an Internship</Link>
+            </div>
+            <div className="flex gap-4 text-foreground/40">
+              <a href="#" className="hover:text-foreground transition-colors">Facebook</a>
+              <a href="#" className="hover:text-foreground transition-colors">LinkedIn</a>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t text-center text-xs text-foreground/50">
+            InternBD &copy; {new Date().getFullYear()}. Free internship discovery for Bangladeshi students.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
