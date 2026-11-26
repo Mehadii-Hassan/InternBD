@@ -1,274 +1,76 @@
 {
   "sources": [
     {
-      "name": "Grameenphone Careers",
-      "url": "https://www.grameenphone.com/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "Commure Bangladesh",
+      "url": "https://jobs.ashbyhq.com/commure",
+      "type": "ashby_html",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Robi Careers",
-      "url": "https://www.robi.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "Field Nation (Lever)",
+      "url": "https://jobs.lever.co/fieldnation",
+      "type": "ats_json",
+      "lever_site": "fieldnation",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Banglalink Careers",
-      "url": "https://www.banglalink.com/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "RWS TrainAI (Lever)",
+      "url": "https://jobs.lever.co/rws",
+      "type": "ats_json",
+      "lever_site": "rws",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "BRAC Jobs",
-      "url": "https://www.brac.net/careers/",
-      "type": "website",
-      "is_trusted": true
+      "name": "Bangladesh Software Solution",
+      "url": "https://bssoln.com/careers",
+      "type": "html",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Pathao Careers",
-      "url": "https://pathao.com/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "BDJobs Live Internships",
+      "url": "https://www.bdjobslive.com/bdjobs-circular/internship-opportunity",
+      "type": "html",
+      "is_trusted": false,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "bKash Careers",
-      "url": "https://www.bkash.com/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "Novara Engineering",
+      "url": "https://novaraengineering.com/career",
+      "type": "html",
+      "is_trusted": false,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Nagad Careers",
-      "url": "https://www.nagad.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "CIMMYT (Workable)",
+      "url": "https://apply.workable.com/cimmyt-1",
+      "type": "html",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "ShopUp Careers",
-      "url": "https://shopup.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "D-ploy (Workable)",
+      "url": "https://apply.workable.com/d-ploy",
+      "type": "html",
+      "is_trusted": false,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Chaldal Careers",
-      "url": "https://chaldal.com/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "WaterAid Bangladesh",
+      "url": "https://apply.workable.com/wateraid",
+      "type": "html",
+      "is_trusted": true,
+      "verified_on": "2026-11-26"
     },
     {
-      "name": "Daraz Bangladesh Careers",
-      "url": "https://seller.daraz.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Brain Station 23 Careers",
-      "url": "https://brainstation23.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Cefalo Careers",
-      "url": "https://cefalo.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Tiger IT Careers",
-      "url": "https://tigeritbd.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Samsung R&D Bangladesh",
-      "url": "https://samsung.com/bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Bdjobs Internship Category",
-      "url": "https://jobs.bdjobs.com/internship",
-      "type": "jobboard",
-      "is_trusted": true
-    },
-    {
-      "name": "Bdjobs.com",
-      "url": "https://jobs.bdjobs.com/",
-      "type": "jobboard",
-      "is_trusted": true
-    },
-    {
-      "name": "Prothom Alo Jobs",
-      "url": "https://jobs.prothomalo.com/",
-      "type": "jobboard",
-      "is_trusted": true
-    },
-    {
-      "name": "Eastern Bank Careers",
-      "url": "https://ebl.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Dutch-Bangla Bank Careers",
-      "url": "https://dbb.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "City Bank Careers",
-      "url": "https://www.thecitybank.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "BRAC Bank Careers",
-      "url": "https://www.bracbank.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Grants",
-      "url": "https://www.grants.gov.bd/",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "Software Technology Parks",
-      "url": "https://stp.gov.bd/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "BASIS",
-      "url": "https://basis.org.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "10 Minute School",
-      "url": "https://10minuteschool.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Shohoz",
-      "url": "https://shohoz.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Foodpanda Bangladesh",
-      "url": "https://www.foodpanda.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Pickaboo",
-      "url": "https://pickaboo.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Evaly",
-      "url": "https://evaly.com.bd/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "Ajkerdeal",
-      "url": "https://ajkerdeal.com/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "BD Jobs Today",
-      "url": "https://bdjobstoday.com/",
-      "type": "jobboard",
-      "is_trusted": false
-    },
-    {
-      "name": "Chakri.com",
-      "url": "https://chakri.com/",
-      "type": "jobboard",
-      "is_trusted": false
-    },
-    {
-      "name": "Bechde",
-      "url": "https://bechde.com/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "Dominos Bangladesh Careers",
-      "url": "https://www.dominos.com.bd/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "KFC Bangladesh Careers",
-      "url": "https://kfc.com.bd/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "Pizza Hut Bangladesh Careers",
-      "url": "https://pizzahut.com.bd/careers",
-      "type": "website",
-      "is_trusted": false
-    },
-    {
-      "name": "Transcom Ltd",
-      "url": "https://transcomltd.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "ACI Limited Careers",
-      "url": "https://aci-bd.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Square Pharmaceuticals Careers",
-      "url": "https://squarepharma.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Beximco Careers",
-      "url": "https://beximco.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Pran-RFL Group Careers",
-      "url": "https://pranrfl.com/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Unilever Bangladesh Careers",
-      "url": "https://www.unilever.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Nestle Bangladesh Careers",
-      "url": "https://www.nestle.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "GlaxoSmithKline Bangladesh Careers",
-      "url": "https://gsk.com.bd/careers",
-      "type": "website",
-      "is_trusted": true
-    },
-    {
-      "name": "Reckitt Bangladesh Careers",
-      "url": "https://reckitt.com/bd/careers",
-      "type": "website",
-      "is_trusted": true
+      "name": "Plivix Technologies",
+      "url": "https://www.plivix-tech.com/internships",
+      "type": "html",
+      "is_trusted": false,
+      "verified_on": "2026-11-26"
     }
   ],
   "settings": {
