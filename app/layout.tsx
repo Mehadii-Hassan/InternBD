@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import "@/app/globals.css";
 import React from "react";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", weight: ["300", "400", "500", "600", "700"] });
 
 export const metadata: Metadata = {

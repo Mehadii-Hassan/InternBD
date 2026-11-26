@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Building2, Users, Mail, MapPin, Phone } from "lucide-react";
+import { Target, Users, MapPin } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-background py-8">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-foreground text-bangla mb-6">About InternBD</h1>
         
         <div className="space-y-8">
@@ -18,47 +18,36 @@ export default function AboutPage() {
             </p>
           </section>
 
-          <section className="bg-card border border-border rounded-xl p-6">
+          <section className="bg-card border border-input rounded-xl p-6">
             <h2 className="text-xl font-semibold text-foreground mb-4">Why InternBD?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-start gap-3">
-                <Building2 className="w-5 h-5 text-primary-600 shrink-0 mt-0.5" />
+                <Target className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-foreground">30+ Sample Internships</h3>
                   <p className="text-sm text-muted-foreground">Realistic opportunities across Bangladesh</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Users className="w-5 h-5 text-primary-600 shrink-0 mt-0.5" />
+                <Users className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-foreground">For Students & Grads</h3>
                   <p className="text-sm text-muted-foreground">Built specifically for Bangladeshi talent</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary-600 shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-foreground">Local Focus</h3>
-                  <p className="text-sm text-muted-foreground">Dhaka, Chittagong, Sylhet, Remote and more</p>
+                  <p className="text-sm text-muted-foreground">Dhaka, Chattogram, Sylhet, Remote and more</p>
                 </div>
               </div>
             </div>
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground mb-3">Coming Soon</h2>
-            <ul className="list-disc list-inside text-muted-foreground space-y-2">
-              <li>Supabase integration for real internship data</li>
-              <li>User authentication and profiles</li>
-              <li>Company profiles and reviews</li>
-              <li>Application tracking</li>
-              <li>Email alerts for new internships</li>
-            </ul>
-          </section>
         </div>
 
         <div className="mt-12 pt-8 border-t">
-          <Link href="/" className="text-primary-600 hover:text-primary-700 font-medium">
+          <Link href="/" className="text-primary hover:text-primary/90 font-medium">
             ← Back to home
           </Link>
         </div>

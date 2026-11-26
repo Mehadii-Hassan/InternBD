@@ -12,7 +12,6 @@ import { AdSlot } from "@/components/AdSlot";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 import {
   SAMPLE_INTERNSHIPS,
   CATEGORIES,
