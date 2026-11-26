@@ -120,6 +120,24 @@ CREATE INDEX idx_scrape_runs_source_name ON scrape_runs(source_name);
 CREATE INDEX idx_scrape_sources_is_active ON scrape_sources(is_active);
 
 -- ============================================================
+-- 3b. GRANTS (table-level privileges; RLS controls row-level access)
+-- ============================================================
+
+GRANT SELECT ON public.internships TO anon;
+GRANT ALL ON public.internships TO service_role;
+
+GRANT SELECT ON public.companies TO anon;
+GRANT ALL ON public.companies TO service_role;
+
+GRANT INSERT ON public.reports TO anon;
+GRANT ALL ON public.reports TO service_role;
+
+GRANT ALL ON public.scrape_runs TO service_role;
+GRANT ALL ON public.scrape_sources TO service_role;
+
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO service_role;
+
+-- ============================================================
 -- 4. ROW LEVEL SECURITY
 -- ============================================================
 
