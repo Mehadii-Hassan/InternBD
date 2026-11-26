@@ -2,6 +2,9 @@
   "name": "internbd",
   "version": "1.0.0",
   "description": "Find Your First Internship in Bangladesh",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
