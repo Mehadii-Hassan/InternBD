@@ -4,9 +4,11 @@ import { getInternshipById, getRelatedInternships } from "@/lib/actions/internsh
 import { ShareButtons } from "@/components/ShareButtons";
 import { FakeReportWidget } from "@/components/FakeReportWidget";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { VoteWidget } from "@/components/vote/VoteWidget";
+import { RemovalRequestForm } from "@/components/vote/RemovalRequestForm";
 import { AdSlot } from "@/components/AdSlot";
 import Link from "next/link";
-import { Mail, MapPin, Clock, Link as LinkIcon, Play, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, MapPin, Clock, Link as LinkIcon, Play, CheckCircle, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import type { Internship } from "@/lib/types";
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -48,6 +50,11 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
   const isExpired = daysLeft <= 0;
   const isUrgent = daysLeft <= 7 && daysLeft > 0;
 
+  const totalVotes = internship.real_votes + internship.fake_votes;
+  const fakeShare = totalVotes > 0 ? internship.fake_votes / totalVotes : 0;
+  const isLikelyFake = totalVotes >= 5 && fakeShare >= 0.6;
+  const isVerified = internship.is_verified;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
@@ -71,6 +78,11 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
                   Verified
                 </span>
               )}
+              {isLikelyFake && (
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-destructive text-destructive">
+                  Community Flagged
+                </span>
+              )}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground text-bangla mb-2 leading-tight">
               {internship.title}
@@ -84,6 +96,21 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
           </div>
           <BookmarkButton internshipId={internship.id} />
         </div>
+
+        {/* Likely Fake Warning */}
+        {isLikelyFake && !isVerified && (
+          <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+              <div>
+                <h3 className="text-sm font-medium text-destructive">Community Flagged as Potentially Fake</h3>
+                <p className="text-xs text-destructive/60 mt-1">
+                  This listing has received multiple "fake" votes from the community. Please verify before applying.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Meta info grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -174,18 +201,20 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
               </ul>
             </section>
 
-            <section className="bg-primary rounded-xl p-6 text-primary-foreground">
-              <h2 className="text-xl font-bold mb-4 text-bangla">How to Apply</h2>
-              <p className="text-primary-foreground/80 mb-6">
-                {internship.apply_link
-                  ? "Click the button below to apply directly on the company website."
-                  : `Send your application to ${internship.apply_email}`}
-              </p>
+            <section className="bg-card border border-border rounded-xl p-6">
+              <h2 className="text-xl font-bold text-foreground mb-4 text-bangla flex items-center gap-2">
+                <Mail className="w-4 h-4" /> How to Apply
+              </h2>
+              <p className="text-muted-foreground mb-4">{internship.how_to_apply || "Apply using the link or email below."}</p>
               <a
                 href={applyUrl}
                 target={isEmail ? undefined : "_blank"}
                 rel={isEmail ? undefined : "noopener noreferrer"}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-semibold text-lg hover:bg-white/90 transition-colors"
+                className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
+                  isLikelyFake && !isVerified
+                    ? "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                }`}
               >
                 {isEmail ? (
                   <>
@@ -197,7 +226,12 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
                   </>
                 )}
               </a>
-              <p className="mt-4 text-xs text-primary-foreground/60 text-center">
+              {isLikelyFake && !isVerified && (
+                <p className="mt-2 text-xs text-destructive text-center">
+                  Warning: This listing is community-flagged. Verify the opportunity before applying.
+                </p>
+              )}
+              <p className="mt-3 text-xs text-muted-foreground text-center">
                 {isEmail ? "Opens your email client" : "Opens in a new tab"}
               </p>
             </section>
@@ -216,7 +250,12 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
               </div>
             )}
 
-            <FakeReportWidget />
+            {/* Vote Widget */}
+            <VoteWidget
+              internshipId={internship.id}
+              currentRealVotes={internship.real_votes}
+              currentFakeVotes={internship.fake_votes}
+            />
           </div>
 
           {/* Sidebar */}
@@ -229,7 +268,11 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
                 href={applyUrl}
                 target={isEmail ? undefined : "_blank"}
                 rel={isEmail ? undefined : "noopener noreferrer"}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors mb-4"
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-lg transition-colors ${
+                  isLikelyFake && !isVerified
+                    ? "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                }`}
               >
                 {isEmail ? (
                   <>
@@ -241,8 +284,27 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
                   </>
                 )}
               </a>
+              {isLikelyFake && !isVerified && (
+                <p className="mt-2 text-xs text-destructive text-center">
+                  Community-flagged. Verify before applying.
+                </p>
+              )}
               <ShareButtons url={typeof window !== "undefined" ? window.location.href : ""} title={internship.title} />
             </div>
+
+            {/* Trust Badge & Voting in Sidebar */}
+            <VoteWidget
+              internshipId={internship.id}
+              currentRealVotes={internship.real_votes}
+              currentFakeVotes={internship.fake_votes}
+              className="sticky top-[100px]"
+            />
+
+            {/* Removal Request Form */}
+            <RemovalRequestForm
+              internshipId={internship.id}
+              postUrl={typeof window !== "undefined" ? window.location.href : ""}
+            />
 
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider text-bangla">

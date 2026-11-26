@@ -209,6 +209,8 @@ export async function createInternship(formData: FormData) {
   const title = formData.get("title") as string;
   const companyName = formData.get("company_name") as string;
   const companyEmail = formData.get("company_email") as string;
+  const companyWebsite = formData.get("company_website") as string;
+  const companyLogoUrl = formData.get("company_logo_url") as string;
   const category = formData.get("category") as string;
   const location = formData.get("location") as string;
   const department = formData.get("department") as string;
@@ -220,9 +222,88 @@ export async function createInternship(formData: FormData) {
   const description = formData.get("description") as string;
   const requirements = formData.get("requirements") as string;
   const responsibilities = formData.get("responsibilities") as string;
+  const howToApply = formData.get("how_to_apply") as string;
   const applyLink = formData.get("apply_link") as string;
   const applyEmail = formData.get("apply_email") as string;
-  const hrEmail = formData.get("hr_email") as string;
+  const submitterType = formData.get("submitter_type") as string;
+  const submitterEmail = formData.get("submitter_email") as string;
+  const voterHash = formData.get("voter_hash") as string;
+  const honeypot = formData.get("honeypot") as string;
+
+  // Honeypot check - if filled, it's a bot
+  if (honeypot && honeypot.trim()) {
+    return { success: false, error: "Spam detected" };
+  }
+
+  // Basic validation
+  if (!title || !companyName || !category || !location || !description || !deadline) {
+    return { success: false, error: "Required fields missing" };
+  }
+
+  // Deadline not in the past
+  const deadlineDate = new Date(deadline);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (deadlineDate < today) {
+    return { success: false, error: "Deadline cannot be in the past" };
+  }
+
+  // Minimum description length
+  if (description.length < 20) {
+    return { success: false, error: "Description must be at least 20 characters" };
+  }
+
+  // Block obvious spam words
+  const spamWords = ["earn money", "work from home", "get rich", "make money fast", "no experience needed", "part time easy money"];
+  const lowerText = `${title} ${description} ${companyName}`.toLowerCase();
+  for (const spam of spamWords) {
+    if (lowerText.includes(spam)) {
+      return { success: false, error: "Content contains blocked terms" };
+    }
+  }
+
+  // Rate limit by IP hash (max 3 submissions per hour per IP)
+  if (voterHash) {
+    const { count: recentCount } = await supabase
+      .from("internships")
+      .select("*", { count: "exact", head: true })
+      .eq("source", "hr")
+      .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
+    if (recentCount && recentCount >= 3) {
+      return { success: false, error: "Too many submissions. Try again later." };
+    }
+  }
+
+  // Check for duplicate by same company + title or same apply link
+  const existingByTitle = await supabase
+    .from("internships")
+    .select("id")
+    .eq("company_name", companyName)
+    .eq("title", title)
+    .single();
+  if (existingByTitle.data) {
+    return { success: false, error: "A post with this company and title already exists" };
+  }
+
+  if (applyLink) {
+    const existingByLink = await supabase
+      .from("internships")
+      .select("id")
+      .eq("apply_link", applyLink)
+      .single();
+    if (existingByLink.data) {
+      return { success: false, error: "A post with this apply link already exists" };
+    }
+  }
+
+  // Determine status: auto-approve if company is trusted
+  const { data: company } = await supabase
+    .from("companies")
+    .select("is_trusted")
+    .eq("slug", companyName.toLowerCase().replace(/\s+/g, "-"))
+    .single();
+
+  const isTrustedCompany = company?.is_trusted || false;
 
   const { data, error } = await supabase
     .from("internships")
@@ -230,10 +311,13 @@ export async function createInternship(formData: FormData) {
       {
         title,
         company_name: companyName,
-        company_email: hrEmail || companyEmail,
+        company_slug: companyName.toLowerCase().replace(/\s+/g, "-"),
+        company_logo_url: companyLogoUrl || null,
+        company_email: submitterEmail || companyEmail || null,
         category,
         department: department || null,
         location,
+        division: location,
         work_mode: workMode,
         is_paid: paidStatus,
         stipend: stipend || null,
@@ -242,11 +326,12 @@ export async function createInternship(formData: FormData) {
         description,
         requirements: requirements ? requirements.split(",").map((r) => r.trim()).filter(Boolean) : [],
         responsibilities: responsibilities ? responsibilities.split(",").map((r) => r.trim()).filter(Boolean) : [],
+        how_to_apply: howToApply || null,
         apply_link: applyLink || null,
         apply_email: applyEmail || null,
-        source: "hr",
-        source_name: "HR Submission",
-        status: "pending",
+        source: submitterType === "company_hr" ? "hr" : "community",
+        source_name: submitterType === "company_hr" ? "HR Submission" : "Community Submission",
+        status: isTrustedCompany ? "approved" : "pending",
         is_verified: false,
         is_featured: false,
         is_sample: false,
@@ -259,5 +344,287 @@ export async function createInternship(formData: FormData) {
     return { success: false, error: error.message };
   }
 
-  return { success: true, id: data.id };
+  return { success: true, id: data.id, autoApproved: isTrustedCompany };
+}
+
+export async function createRemovalRequest(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const internshipId = formData.get("internship_id") as string;
+  const postUrl = formData.get("post_url") as string;
+  const reason = formData.get("reason") as string;
+  const requesterEmail = formData.get("requester_email") as string;
+
+  if (!internshipId || !postUrl || !reason) {
+    return { success: false, error: "Required fields missing" };
+  }
+
+  const { error } = await supabase
+    .from("removal_requests")
+    .insert([
+      {
+        internship_id: internshipId,
+        post_url: postUrl,
+        reason,
+        requester_email: requesterEmail || null,
+        status: "pending",
+      },
+    ]);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function voteOnInternship(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const internshipId = formData.get("internship_id") as string;
+  const vote = formData.get("vote") as string;
+  const reason = formData.get("reason") as string || null;
+  const voterHash = formData.get("voter_hash") as string;
+
+  if (!internshipId || !vote || !voterHash) {
+    return { success: false, error: "Missing required fields" };
+  }
+
+  if (vote !== "real" && vote !== "fake") {
+    return { success: false, error: "Invalid vote" };
+  }
+
+  // Rate limit: max 5 votes per hour per IP
+  const { count: recentVotes } = await supabase
+    .from("votes")
+    .select("*", { count: "exact", head: true })
+    .eq("voter_hash", voterHash)
+    .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
+  if (recentVotes && recentVotes >= 5) {
+    return { success: false, error: "Too many votes. Try again later." };
+  }
+
+  // Upsert vote (allow changing vote)
+  const { error } = await supabase
+    .from("votes")
+    .upsert(
+      {
+        internship_id: internshipId,
+        vote,
+        reason,
+        voter_hash: voterHash,
+      },
+      { onConflict: "internship_id, voter_hash" }
+    );
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  // Recalculate vote counts and trust score
+  const { data: voteRows } = await supabase
+    .from("votes")
+    .select("vote")
+    .eq("internship_id", internshipId);
+
+  const realVotes = voteRows?.filter((v) => v.vote === "real").length || 0;
+  const fakeVotes = voteRows?.filter((v) => v.vote === "fake").length || 0;
+  const total = realVotes + fakeVotes;
+  const fakeShare = total > 0 ? fakeVotes / total : 0;
+
+  let trustScore = 0;
+  if (total >= 5 && fakeShare >= 0.6) {
+    trustScore = -50; // likely fake
+  } else if (total >= 5 && fakeShare <= 0.2) {
+    trustScore = 50; // community trusted
+  } else {
+    trustScore = 0; // disputed / no clear signal
+  }
+
+  await supabase
+    .from("internships")
+    .update({ real_votes: realVotes, fake_votes: fakeVotes, trust_score: trustScore })
+    .eq("id", internshipId);
+
+  return { success: true, real_votes: realVotes, fake_votes: fakeVotes, trust_score: trustScore };
+}
+
+export async function getVotesForInternship(internshipId: string) {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("votes")
+    .select("vote, reason, created_at")
+    .eq("internship_id", internshipId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { votes: [], real_votes: 0, fake_votes: 0, error: error.message };
+  }
+
+  const realVotes = data?.filter((v) => v.vote === "real").length || 0;
+  const fakeVotes = data?.filter((v) => v.vote === "fake").length || 0;
+
+  return { votes: data || [], real_votes, fake_votes, error: null };
+}
+
+export async function getAdminStats() {
+  const supabase = createServiceClient();
+
+  const [
+    { count: total },
+    { count: pending },
+    { count: approved },
+    { count: rejected },
+    { count: expired },
+    { count: newToday },
+    { count: removalRequests },
+    { data: scrapeRuns },
+  ] = await Promise.all([
+    supabase.from("internships").select("*", { count: "exact", head: true }),
+    supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "approved"),
+    supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "rejected"),
+    supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "expired"),
+    supabase
+      .from("internships")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+    supabase.from("removal_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("scrape_runs").select("*").order("created_at", { ascending: false }).limit(10),
+  ]);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const { count: newThisWeek } = await supabase
+    .from("internships")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", weekAgo.toISOString());
+
+  return {
+    total: total || 0,
+    pending: pending || 0,
+    approved: approved || 0,
+    rejected: rejected || 0,
+    expired: expired || 0,
+    newToday: newToday || 0,
+    newThisWeek: newThisWeek || 0,
+    removalRequests: removalRequests || 0,
+    scrapeRuns: scrapeRuns || [],
+  };
+}
+
+export async function getPendingInternships() {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("internships")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { internships: [], error: error.message };
+  }
+
+  return { internships: (data || []) as any[], error: null };
+}
+
+export async function moderateInternship(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const internshipId = formData.get("internship_id") as string;
+  const action = formData.get("action") as string; // approve, reject, delete, verify, unverify, feature, unfeature, trust_company, untrust_company
+
+  const { data: internship } = await supabase
+    .from("internships")
+    .select("company_name")
+    .eq("id", internshipId)
+    .single();
+
+  if (!internship) {
+    return { success: false, error: "Internship not found" };
+  }
+
+  const updates: any = {};
+  let adminAction = "";
+
+  if (action === "approve") {
+    updates.status = "approved";
+    adminAction = "approve";
+  } else if (action === "reject") {
+    updates.status = "rejected";
+    adminAction = "reject";
+  } else if (action === "delete") {
+    await supabase.from("internships").delete().eq("id", internshipId);
+    await supabase.from("admin_actions").insert([
+      {
+        admin_ip_hash: "admin",
+        action: "delete_internship",
+        target_type: "internship",
+        target_id: internshipId,
+        details: `Deleted internship ${internshipId}`,
+      },
+    ]);
+    return { success: true };
+  } else if (action === "verify") {
+    updates.is_verified = true;
+    adminAction = "verify_internship";
+  } else if (action === "unverify") {
+    updates.is_verified = false;
+    adminAction = "unverify_internship";
+  } else if (action === "feature") {
+    updates.is_featured = true;
+    adminAction = "feature_internship";
+  } else if (action === "unfeature") {
+    updates.is_featured = false;
+    adminAction = "unfeature_internship";
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await supabase.from("internships").update(updates).eq("id", internshipId);
+  }
+
+  await supabase.from("admin_actions").insert([
+    {
+      admin_ip_hash: "admin",
+      action: adminAction,
+      target_type: "internship",
+      target_id: internshipId,
+      details: `${adminAction} internship ${internshipId}`,
+    },
+  ]);
+
+  return { success: true };
+}
+
+export async function toggleCompanyTrust(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const companySlug = formData.get("company_slug") as string;
+  const isTrusted = formData.get("is_trusted") === "true";
+
+  const { error } = await supabase
+    .from("companies")
+    .update({ is_trusted: isTrusted })
+    .eq("slug", companySlug);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function removeAllSampleData() {
+  const supabase = createServiceClient();
+
+  const { error } = await supabase.from("internships").delete().eq("is_sample", true);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 }

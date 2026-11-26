@@ -60,7 +60,9 @@ CREATE TABLE internships (
   report_count INTEGER DEFAULT 0,
   trust_score INTEGER DEFAULT 0,
   scraped_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  real_votes INTEGER DEFAULT 0,
+  fake_votes INTEGER DEFAULT 0
 );
 
 -- Reports (fake reports)
@@ -69,6 +71,39 @@ CREATE TABLE reports (
   internship_id UUID REFERENCES internships(id) ON DELETE CASCADE,
   reason TEXT NOT NULL,
   ip_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Votes (real/fake voting on internships)
+CREATE TABLE votes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  internship_id UUID REFERENCES internships(id) ON DELETE CASCADE,
+  vote TEXT NOT NULL CHECK (vote IN ('real', 'fake')),
+  reason TEXT,
+  voter_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(internship_id, voter_hash)
+);
+
+-- Removal requests (companies or users requesting removal of a post)
+CREATE TABLE removal_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  internship_id UUID REFERENCES internships(id) ON DELETE CASCADE,
+  post_url TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  requester_email TEXT,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Admin actions log
+CREATE TABLE admin_actions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_ip_hash TEXT NOT NULL,
+  action TEXT NOT NULL,
+  target_type TEXT NOT NULL,
+  target_id UUID,
+  details TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -116,6 +151,10 @@ CREATE INDEX idx_internships_search ON internships USING gin(
 );
 
 CREATE INDEX idx_reports_internship_id ON reports(internship_id);
+CREATE INDEX idx_votes_internship_id ON votes(internship_id);
+CREATE INDEX idx_votes_voter_hash ON votes(voter_hash);
+CREATE INDEX idx_removal_requests_internship_id ON removal_requests(internship_id);
+CREATE INDEX idx_admin_actions_created_at ON admin_actions(created_at);
 CREATE INDEX idx_scrape_runs_source_name ON scrape_runs(source_name);
 CREATE INDEX idx_scrape_sources_is_active ON scrape_sources(is_active);
 
@@ -131,6 +170,14 @@ GRANT ALL ON public.companies TO service_role;
 
 GRANT INSERT ON public.reports TO anon;
 GRANT ALL ON public.reports TO service_role;
+
+GRANT INSERT ON public.votes TO anon;
+GRANT ALL ON public.votes TO service_role;
+
+GRANT INSERT ON public.removal_requests TO anon;
+GRANT ALL ON public.removal_requests TO service_role;
+
+GRANT ALL ON public.admin_actions TO service_role;
 
 GRANT ALL ON public.scrape_runs TO service_role;
 GRANT ALL ON public.scrape_sources TO service_role;
@@ -167,6 +214,31 @@ CREATE POLICY "Public can insert reports"
   ON reports FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
+
+-- Votes: public can insert votes, read own vote via voter_hash is not exposed publicly
+-- anon can insert votes; public can read aggregated vote counts (not individual voter hashes)
+ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can insert votes"
+  ON votes FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "Public can read vote summaries"
+  ON votes FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+-- Removal requests: public can insert, service role reads all
+ALTER TABLE removal_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can insert removal requests"
+  ON removal_requests FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Admin actions: service role only
+ALTER TABLE admin_actions ENABLE ROW LEVEL SECURITY;
 
 -- Scrape runs: RLS enabled, no public policies (service role only)
 ALTER TABLE scrape_runs ENABLE ROW LEVEL SECURITY;

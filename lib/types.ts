@@ -75,6 +75,8 @@ export interface Internship {
   is_sample: boolean;
   report_count: number;
   trust_score: number;
+  real_votes: number;
+  fake_votes: number;
   scraped_at: string | null;
   created_at: string;
 }
@@ -172,6 +174,42 @@ export const INTERNSHIP_STATUSES: InternshipStatus[] = [
   "rejected",
   "expired",
 ];
+
+export interface Vote {
+  id: string;
+  internship_id: string;
+  vote: "real" | "fake";
+  reason: string | null;
+  voter_hash: string;
+  created_at: string;
+}
+
+export interface RemovalRequest {
+  id: string;
+  internship_id: string;
+  post_url: string;
+  reason: string;
+  requester_email: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface AdminAction {
+  id: string;
+  admin_ip_hash: string;
+  action: string;
+  target_type: string;
+  target_id: string | null;
+  details: string | null;
+  created_at: string;
+}
+
+export type TrustBadge = "verified" | "community-trusted" | "no-votes" | "disputed" | "likely-fake";
+
+export const TRUST_BADGE_THRESHOLDS = {
+  min_votes_for_community: 5,
+  fake_share_for_likely_fake: 0.6,
+};
 
 export const LOCATION_LABELS: Record<Location, string> = {
   Dhaka: "Dhaka",

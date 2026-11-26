@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FramerMotion } from "@/components/FramerMotion";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { MapPin, Layers } from "lucide-react";
+import { VoteWidget } from "@/components/vote/VoteWidget";
 import type { Internship } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,10 @@ export function InternshipCard({ internship }: InternshipCardProps) {
   );
   const isUrgent = daysLeft <= 7 && daysLeft > 0;
   const isExpired = daysLeft <= 0;
+
+  const totalVotes = internship.real_votes + internship.fake_votes;
+  const fakeShare = totalVotes > 0 ? internship.fake_votes / totalVotes : 0;
+  const isLikelyFake = totalVotes >= 5 && fakeShare >= 0.6;
 
   return (
     <FramerMotion className="group">
@@ -60,6 +65,11 @@ export function InternshipCard({ internship }: InternshipCardProps) {
             {internship.is_verified && (
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-primary-foreground">
                 Verified
+              </span>
+            )}
+            {isLikelyFake && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-destructive text-destructive">
+                Flagged
               </span>
             )}
           </div>
@@ -128,6 +138,14 @@ export function InternshipCard({ internship }: InternshipCardProps) {
               </span>
             </div>
           </Link>
+
+          {/* Compact Vote Widget */}
+          <VoteWidget
+            internshipId={internship.id}
+            currentRealVotes={internship.real_votes}
+            currentFakeVotes={internship.fake_votes}
+            compact
+          />
         </div>
       </div>
     </FramerMotion>
