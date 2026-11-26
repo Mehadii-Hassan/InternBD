@@ -89,7 +89,7 @@ CREATE TABLE scrape_runs (
 -- Scrape sources
 CREATE TABLE scrape_sources (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   url TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'website',
   is_active BOOLEAN DEFAULT TRUE,
