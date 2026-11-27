@@ -1,0 +1,80 @@
+declare module "lucide-react" {
+  export type LucideProps = {
+    size?: number | string;
+    color?: string;
+    strokeWidth?: number | string;
+    className?: string;
+    [key: string]: any;
+  };
+  export function LucideIcon(props: LucideProps): JSX.Element;
+  export const AlertCircle: any;
+  export const AlertTriangle: any;
+  export const ArrowRight: any;
+  export const Book: any;
+  export const Bookmark: any;
+  export const BookmarkCheck: any;
+  export const Building2: any;
+  export const CheckCircle: any;
+  export const CheckCircle2: any;
+  export const ChevronRight: any;
+  export const Clock: any;
+  export const Code2: any;
+  export const Copy: any;
+  export const FileText: any;
+  export const Flag: any;
+  export const Fork: any;
+  export const Gear: any;
+  export const Home: any;
+  export const Layout: any;
+  export const Link: any;
+  export const Loader2: any;
+  export const Lock: any;
+  export const Mail: any;
+  export const MapPin: any;
+  export const Menu: any;
+  export const Megaphone: any;
+  export const Moon: any;
+  export const MoreHorizontal: any;
+  export const MessageSquare: any;
+  export const Palette: any;
+  export const Play: any;
+  export const Plus: any;
+  export const RefreshCw: any;
+  export const Search: any;
+  export const Settings: any;
+  export const Share: any;
+  export const Share2: any;
+  export const Shield: any;
+  export const ShieldCheck: any;
+  export const ShieldOff: any;
+  export const Sun: any;
+  export const ThumbsDown: any;
+  export const ThumbsUp: any;
+  export const Trash2: any;
+  export const Twitter: any;
+  export const User: any;
+  export const Users: any;
+  export const X: any;
+  export const XCircle: any;
+  export const Zigzag: any;
+  export const Banknote: any;
+  export const CircuitBoard: any;
+  export const HardHat: any;
+  export const Filter: any;
+  export const SortAsc: any;
+  export const ArrowUpDown: any;
+  export const Layers: any;
+  export const Edit: any;
+  export const Check: any;
+  export const BarChart3: any;
+  export const LogOut: any;
+  export const Briefcase: any;
+  export const Phone: any;
+  export const MessageSquare: any;
+}
+
+declare global {
+  interface LayoutProps {
+    children: React.ReactNode;
+  }
+}

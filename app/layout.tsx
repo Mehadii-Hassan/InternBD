@@ -3,6 +3,12 @@ import type { ReactNode } from "react";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import "@/app/globals.css";
 
+declare global {
+  interface LayoutProps<T = {}> {
+    children: ReactNode;
+  }
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://internbd.com"),
   title: "InternBD - Find Your First Internship in Bangladesh",

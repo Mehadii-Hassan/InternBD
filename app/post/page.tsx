@@ -125,8 +125,8 @@ export default function PostPage() {
         <form action={handleSubmit} className="space-y-6 bg-card border border-border rounded-xl p-6 md:p-8">
           {/* Honeypot field */}
           <div className="absolute opacity-0 pointer-events-none">
-            <label htmlHp="website" htmlFor="website">Website</label>
-            <input name="honeypot" id="website" type="text" tabIndex="-1" autocomplete="off" />
+            <label htmlFor="website">Website</label>
+            <input name="honeypot" id="website" type="text" tabIndex={-1} autoComplete="off" />
           </div>
 
           <input type="hidden" name="voter_hash" value={voterHash} />

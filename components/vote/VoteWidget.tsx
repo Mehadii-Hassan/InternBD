@@ -47,7 +47,7 @@ export function VoteWidget({
   const realPct = total > 0 ? Math.round((realVotes / total) * 100) : 0;
   const fakePct = total > 0 ? Math.round((fakeVotes / total) * 100) : 0;
 
-  let trustBadge: "verified" | "community-trusted" | "no-votes" | "disputed" | "likely-fake" = "no-votes";
+  let trustBadge: "community-trusted" | "no-votes" | "disputed" | "likely-fake" = "no-votes";
   if (total > 0) {
     const fakeShare = fakeVotes / total;
     if (total >= 5 && fakeShare >= 0.6) trustBadge = "likely-fake";
@@ -73,8 +73,8 @@ export function VoteWidget({
           setVoteMessage({ type: "error", text: result.error });
         } else {
           setMyVote(vote);
-          setRealVotes(result.real_votes);
-          setFakeVotes(result.fake_votes);
+          setRealVotes(result.real_votes ?? 0);
+          setFakeVotes(result.fake_votes ?? 0);
           setVoteMessage({ type: "success", text: `Voted ${vote}!` });
           if (showReason) setShowReason(false);
           if (reason) setReason("");
@@ -108,9 +108,7 @@ export function VoteWidget({
         <span
           className={cn(
             "text-xs font-bold uppercase tracking-wider",
-            trustBadge === "verified"
-              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-              : trustBadge === "community-trusted"
+            trustBadge === "community-trusted"
               ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
               : trustBadge === "no-votes"
               ? "bg-muted dark:bg-muted/30 text-muted-foreground"
@@ -119,9 +117,7 @@ export function VoteWidget({
               : "bg-destructive/10 dark:bg-destructive/30 text-destructive dark:text-destructive/40"
           )}
         >
-          {trustBadge === "verified"
-            ? "Admin Verified"
-            : trustBadge === "community-trusted"
+          {trustBadge === "community-trusted"
             ? "Community Trusted"
             : trustBadge === "no-votes"
             ? "No Votes Yet"

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 export const revalidate = 1800; // 30 minutes ISR
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const { internship, error } = await getInternshipById(resolvedParams.id);
   if (error || !internship) {
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function InternshipDetailPage({ params }: { params: { id: string } }) {
+export default async function InternshipDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const { internship, error } = await getInternshipById(resolvedParams.id);
 
@@ -209,7 +209,7 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
               <h2 className="text-xl font-bold text-foreground mb-4 text-bangla flex items-center gap-2">
                 <Mail className="w-4 h-4" /> How to Apply
               </h2>
-              <p className="text-muted-foreground mb-4">{internship.how_to_apply || "Apply using the link or email below."}</p>
+              <p className="text-muted-foreground mb-4">Apply using the link or email below.</p>
               <a
                 href={applyUrl}
                 target={isEmail ? undefined : "_blank"}

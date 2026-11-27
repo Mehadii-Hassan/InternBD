@@ -462,10 +462,10 @@ export async function getVotesForInternship(internshipId: string) {
     return { votes: [], real_votes: 0, fake_votes: 0, error: error.message };
   }
 
-  const realVotes = data?.filter((v) => v.vote === "real").length || 0;
-  const fakeVotes = data?.filter((v) => v.vote === "fake").length || 0;
+  const realVotes = data?.filter((v: any) => v.vote === "real").length || 0;
+  const fakeVotes = data?.filter((v: any) => v.vote === "fake").length || 0;
 
-  return { votes: data || [], real_votes, fake_votes, error: null };
+  return { votes: data || [], real_votes: realVotes, fake_votes: fakeVotes, error: null };
 }
 
 export async function getAdminStats() {
