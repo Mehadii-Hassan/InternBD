@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from "next/link";
-import { Search, Building2, Clock, ArrowRight, Play } from "lucide-react";
+import { Search, Building2, ArrowRight, Play } from "lucide-react";
 import { Counter } from "@/components/Counter";
 import { CategoryChip } from "@/components/CategoryChip";
 import { InternshipCard } from "@/components/InternshipCard";
