@@ -32,3 +32,6 @@ next-env.d.ts
 
 # Previous create-next-app attempt
 internbd/
+
+# Test results
+test-results/
