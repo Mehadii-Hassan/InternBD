@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { execSync } from "child_process";
 import { join } from "path";
 
@@ -41,9 +41,12 @@ async function fetchWithTimeout(url, ms = 10000) {
 
 async function serverReachable() {
   try {
+    process.stdout.write("  Checking server reachability...\n");
     const res = await fetchWithTimeout(`${BASE}/`, 5000);
+    process.stdout.write(`  Server responded: ${res?.status}\n`);
     return res && res.ok;
   } catch {
+    process.stdout.write("  Server not reachable\n");
     return false;
   }
 }
@@ -97,7 +100,7 @@ async function main() {
       ]) {
         for (const theme of ["light", "dark"]) {
           pageCount++;
-          await context.setViewportSize({ width: viewport.width, height: viewport.height });
+          await page.setViewportSize({ width: viewport.width, height: viewport.height });
           consoleErrors.length = 0;
           failedRequests.length = 0;
 
@@ -208,7 +211,7 @@ async function getRoutes() {
 
   // Try to get real dynamic route data from Supabase
   try {
-    const { createClient } = require("@supabase/supabase-js");
+    const { createClient } = await import("@supabase/supabase-js");
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
     // Get a real internship ID
@@ -258,12 +261,13 @@ async function getRoutes() {
 
 async function staticChecks() {
   // Check for TODO, FIXME, placeholder, lorem, href="#", onClick={() => {}}, console.log
-  const files = getAllFiles(["app", "components", "lib", "scripts"], [
-    ".tsx",
-    ".ts",
-    ".js",
-    ".mjs",
-  ]);
+  const extensions = [".tsx", ".ts", ".js", ".mjs"];
+  const allFiles = [];
+  const dirs = ["app", "components", "lib", "scripts"];
+  for (const dir of dirs) {
+    getAllFiles(dir, extensions, allFiles);
+  }
+  const files = allFiles;
 
   for (const file of files) {
     const content = readFileSync(file, "utf8");
@@ -297,9 +301,9 @@ async function staticChecks() {
   }
 
   // Check for unused components
-  const componentFiles = getAllFiles(["components"], [".tsx"]);
+  const componentFiles = getAllFiles("components", [".tsx"]);
   const usedComponents = new Set();
-  const appFiles = getAllFiles(["app"], [".tsx"]);
+  const appFiles = getAllFiles("app", [".tsx"]);
   for (const file of appFiles) {
     const content = readFileSync(file, "utf8");
     for (const compFile of componentFiles) {
@@ -342,7 +346,7 @@ async function staticChecks() {
 }
 
 function getAllFiles(dir, extensions, result = []) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const entries = readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -546,8 +550,8 @@ function writeAuditReport() {
     lines.push("");
   }
 
-  const fs = require("fs");
-  fs.writeFileSync(reportPath, lines.join("\n"));
+  const { writeFileSync } = require("fs");
+  writeFileSync(reportPath, lines.join("\n"));
   process.stdout.write(`\nAudit report written to ${reportPath}\n`);
 }
 

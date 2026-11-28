@@ -86,7 +86,7 @@ export function InternshipCard({ internship }: InternshipCardProps) {
               className={cn(
                 "px-2 py-0.5 rounded text-[9px] font-medium",
                 internship.is_paid === "Paid"
-                  ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
                   : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400"
               )}
             >
@@ -136,7 +136,7 @@ export function InternshipCard({ internship }: InternshipCardProps) {
                   ? "bg-accent/10 text-accent dark:text-accent/90"
                   : isUrgent
                   ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400"
-                  : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                  : "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
               )}
             >
               {isExpired ? "Expired" : isCritical ? "3 days" : isUrgent ? "7 days" : `${daysLeft} days`}

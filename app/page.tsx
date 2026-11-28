@@ -22,8 +22,8 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <a href="#content" className="skip-link">Skip to content</a>
-
-      {/* Hero Section - Left aligned */}
+      <main>
+        {/* Hero Section - Left aligned */}
       <section className="relative bg-background border-b border-border py-12 lg:py-24 overflow-hidden dot-grid">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-2xl">
@@ -50,13 +50,13 @@ export default async function HomePage() {
                   className="w-full pl-10 pr-4 py-3 rounded-md border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
                 />
               </div>
-              <select name="location" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
+              <select name="location" aria-label="Filter by location" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Locations</option>
                 {LOCATIONS.map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
               </select>
-              <select name="department" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
+              <select name="department" aria-label="Filter by department" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Departments</option>
                 {DEPARTMENTS.map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -223,7 +223,7 @@ export default async function HomePage() {
             <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4 text-bangla">
               Hiring interns?
             </h2>
-            <p className="text-primary-foreground/80 mb-6 max-w-lg mx-auto">
+            <p className="text-primary-foreground mb-6 max-w-lg mx-auto">
               Post your internship for free and reach thousands of students and fresh graduates across Bangladesh.
             </p>
             <Link
@@ -237,6 +237,7 @@ export default async function HomePage() {
       </section>
 
       <AdSlot placement="between-cards" />
+      </main>
     </div>
   );
 }

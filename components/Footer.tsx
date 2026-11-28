@@ -40,9 +40,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
               Platform
-            </h4>
+            </h2>
             <ul className="space-y-2">
               {COMPANY_LINKS.map((link) => (
                 <li key={link.label}>
@@ -58,9 +58,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
               Legal
-            </h4>
+            </h2>
             <ul className="space-y-2">
               {FOOTER_LINKS.slice(4, 8).map((link) => (
                 <li key={link.label}>
@@ -76,17 +76,17 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
               Connect
-            </h4>
+            </h2>
             <div className="flex gap-3 text-foreground/40">
-              <a href="#" className="hover:text-foreground transition-colors">
+              <a href="https://facebook.com/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 Facebook
               </a>
-              <a href="#" className="hover:text-foreground transition-colors">
+              <a href="https://linkedin.com/company/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 LinkedIn
               </a>
-              <a href="#" className="hover:text-foreground transition-colors">
+              <a href="https://twitter.com/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 Twitter
               </a>
             </div>

@@ -1,6 +1,9 @@
+"use client";
+
 import { getAdminStats } from "@/lib/actions/admin";
 import { RemoveSampleButton } from "@/components/admin/RemoveSampleButton";
 import { Users, Shield, Clock, Mail } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface StatCardProps {
   title: string;
@@ -27,8 +30,29 @@ function StatCard({ title, value, icon, color, change }: StatCardProps) {
   );
 }
 
-export default async function AdminDashboard() {
-  const stats = await getAdminStats();
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAdminStats().then((s) => {
+      setStats(s);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground text-bangla mb-2">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const s = stats!;
 
   return (
     <div className="space-y-8">
@@ -38,32 +62,32 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Remove sample data action */}
-      <RemoveSampleButton total={stats.total} />
+      <RemoveSampleButton total={s.total} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Internships"
-          value={stats.total}
+          value={s.total}
           icon={<Users />}
           color="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
         />
         <StatCard
           title="Pending Review"
-          value={stats.pending}
+          value={s.pending}
           icon={<Clock />}
           color="bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400"
-          change={`${stats.newToday} new today`}
+          change={`${s.newToday} new today`}
         />
         <StatCard
           title="Approved"
-          value={stats.approved}
+          value={s.approved}
           icon={<Shield />}
           color="bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400"
         />
         <StatCard
           title="Removal Requests"
-          value={stats.removalRequests}
+          value={s.removalRequests}
           icon={<Mail />}
           color="bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400"
         />
@@ -74,7 +98,7 @@ export default async function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Posts by Category</h3>
           <div className="space-y-3">
-            {stats.byCategory.map(([cat, count]) => (
+            {s.byCategory.map(([cat, count]: [string, number]) => (
               <div key={cat} className="flex items-center justify-between text-sm">
                 <span className="text-foreground/60">{cat}</span>
                 <span className="font-medium text-foreground">{count}</span>
@@ -87,7 +111,7 @@ export default async function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Posts by Location</h3>
           <div className="space-y-3">
-            {stats.byLocation.map(([loc, count]) => (
+            {s.byLocation.map(([loc, count]: [string, number]) => (
               <div key={loc} className="flex items-center justify-between text-sm">
                 <span className="text-foreground/60">{loc}</span>
                 <span className="font-medium text-foreground">{count}</span>
@@ -102,7 +126,7 @@ export default async function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Top Companies</h3>
           <div className="space-y-3">
-            {stats.topCompanies.map(([company, count]) => (
+            {s.topCompanies.map(([company, count]: [string, number]) => (
               <div key={company} className="flex items-center justify-between text-sm">
                 <span className="text-foreground/60 truncate max-w-[150px]">{company}</span>
                 <span className="font-medium text-foreground">{count}</span>
@@ -115,7 +139,7 @@ export default async function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Recent Scrape Runs</h3>
           <div className="space-y-3">
-            {stats.scrapeRuns.map((run: any) => (
+            {s.scrapeRuns.map((run: any) => (
               <div key={run.id} className="flex items-center justify-between text-sm p-2 rounded bg-secondary/50">
                 <div>
                   <p className="text-sm text-foreground">{run.source_name}</p>
@@ -129,7 +153,7 @@ export default async function AdminDashboard() {
                 </div>
               </div>
             ))}
-            {stats.scrapeRuns.length === 0 && (
+            {s.scrapeRuns.length === 0 && (
               <p className="text-xs text-muted-foreground text-center">No scrape runs yet</p>
             )}
           </div>
@@ -139,13 +163,13 @@ export default async function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Failing Sources</h3>
           <div className="space-y-3">
-            {stats.scrapeRuns.filter((r: any) => r.errors > 0).map((run: any) => (
+            {s.scrapeRuns.filter((r: any) => r.errors > 0).map((run: any) => (
               <div key={run.id} className="flex items-center justify-between text-sm p-2 rounded bg-destructive/10">
                 <span className="text-xs text-destructive">{run.source_name}</span>
                 <span className="text-xs text-destructive">{run.errors} errors</span>
               </div>
             ))}
-            {stats.scrapeRuns.filter((r: any) => r.errors > 0).length === 0 && (
+            {s.scrapeRuns.filter((r: any) => r.errors > 0).length === 0 && (
               <p className="text-xs text-muted-foreground text-center">No failing sources</p>
             )}
           </div>
