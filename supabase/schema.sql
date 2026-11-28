@@ -50,6 +50,7 @@ CREATE TABLE internships (
   responsibilities TEXT[] DEFAULT '{}',
   apply_link TEXT,
   apply_email TEXT,
+  how_to_apply TEXT,
   source internship_source NOT NULL DEFAULT 'manual',
   source_name TEXT,
   source_url TEXT UNIQUE,

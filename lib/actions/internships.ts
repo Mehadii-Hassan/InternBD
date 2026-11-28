@@ -281,7 +281,6 @@ export async function createInternship(formData: FormData) {
   const description = formData.get("description") as string;
   const requirements = formData.get("requirements") as string;
   const responsibilities = formData.get("responsibilities") as string;
-  const howToApply = formData.get("how_to_apply") as string;
   const applyLink = formData.get("apply_link") as string;
   const applyEmail = formData.get("apply_email") as string;
   const submitterType = formData.get("submitter_type") as string;
@@ -403,10 +402,9 @@ export async function createInternship(formData: FormData) {
         description,
         requirements: requirements ? requirements.split(",").map((r) => r.trim()).filter(Boolean) : [],
         responsibilities: responsibilities ? responsibilities.split(",").map((r) => r.trim()).filter(Boolean) : [],
-        how_to_apply: howToApply || null,
         apply_link: applyLink || null,
         apply_email: applyEmail || null,
-        source: submitterType === "company_hr" ? "hr" : "community",
+        source: submitterType === "company_hr" ? "hr" : "manual",
         source_name: submitterType === "company_hr" ? "HR Submission" : "Community Submission",
         status: "pending",
         is_verified: false,

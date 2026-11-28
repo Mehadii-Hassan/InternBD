@@ -66,6 +66,7 @@ export interface Internship {
   responsibilities: string[];
   apply_link: string | null;
   apply_email: string | null;
+  how_to_apply: string | null;
   source: InternshipSource;
   source_name: string | null;
   source_url: string | null;

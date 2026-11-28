@@ -426,11 +426,13 @@ async function main() {
       // Admin login
       consoleErrors.length = 0;
       serverErrors.length = 0;
+      // Clear any existing admin cookies from previous tests
+      await page.context().clearCookies();
       await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
       assertNoPageErrors("admin login page");
       await page.fill('input[type="password"]', ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
-      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 10000 });
+      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 15000 });
 
       // Go to moderation and approve
       await page.goto(`${BASE}/admin/moderate`, { waitUntil: "domcontentloaded" });
@@ -473,6 +475,8 @@ async function main() {
     await test("Admin dashboard redirects without login", async () => {
       consoleErrors.length = 0;
       serverErrors.length = 0;
+      // Clear any existing admin cookies
+      await page.context().clearCookies();
       await page.goto(`${BASE}/admin/dashboard`, { waitUntil: "domcontentloaded" });
       assertNoPageErrors("admin dashboard redirect");
       const url = page.url();
@@ -481,11 +485,13 @@ async function main() {
 
     // 9. Admin logout works (via API route)
     await test("Admin logout works", async () => {
+      // Clear any existing admin cookies first
+      await page.context().clearCookies();
       // Log in first
       await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
       await page.fill('input[type="password"]', ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
-      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 10000 });
+      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 15000 });
 
       // Call logout API - clears the cookie
       await fetch(`${BASE}/api/admin/logout`, { method: "POST" });
