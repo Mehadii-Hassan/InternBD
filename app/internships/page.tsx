@@ -88,13 +88,13 @@ export default async function InternshipsPage({
           </div>
           <div className="flex items-center gap-3">
             <button
-              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-lg border border-input bg-background text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-md border border-input bg-background text-sm font-medium text-foreground hover:bg-secondary transition-colors"
             >
               <Filter className="w-4 h-4" /> Filters
             </button>
             <select
               defaultValue={sort}
-              className="px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary"
+              className="px-4 py-3 rounded-md border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -116,7 +116,7 @@ export default async function InternshipsPage({
               {activeFilters.map((f) => (
                 <Link
                   key={`${f.key}-${f.value}`}
-                  href="#" // Placeholder - client-side would handle this
+                  href="#"
                   onClick={(e) => e.preventDefault()}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 transition-colors"
                 >
@@ -133,7 +133,7 @@ export default async function InternshipsPage({
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Sort</p>
-                  <select defaultValue={sort} className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
+                  <select defaultValue={sort} className="w-full px-4 py-3 rounded-md border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
                     {SORT_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -141,7 +141,7 @@ export default async function InternshipsPage({
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Deadline</p>
-                  <select defaultValue={deadline} className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
+                  <select defaultValue={deadline} className="w-full px-4 py-3 rounded-md border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
                     {DEADLINE_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -149,7 +149,7 @@ export default async function InternshipsPage({
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Posted</p>
-                  <select defaultValue={posted} className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
+                  <select defaultValue={posted} className="w-full px-4 py-3 rounded-md border border-input bg-background text-sm text-foreground outline-none focus:ring-2 focus-ring-primary">
                     {POSTED_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -166,11 +166,11 @@ export default async function InternshipsPage({
                   ))
                 ) : (
                   <div className="lg:col-span-3 text-center py-20">
-                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                    <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mx-auto mb-6">
                       <Search className="w-10 h-10 text-muted-foreground" />
                     </div>
                     <h3 className="text-lg font-medium text-foreground mb-2">No internships found</h3>
-                    <p className="text-muted-foreground mb-8">
+                    <p className="text-muted-foreground mb-6">
                       Try adjusting your filters or search terms to see more results.
                     </p>
                   </div>

@@ -1,16 +1,18 @@
 "use client";
 
-import * as React from 'react';
-import { useState } from "react";
+import * as React from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Menu, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 
 const NAV_LINKS = [
   { label: "Internships", href: "/internships" },
   { label: "Companies", href: "/companies" },
   { label: "Categories", href: "/categories" },
+  { label: "Locations", href: "/locations" },
   { label: "Post Free", href: "/post" },
   { label: "About", href: "/about" },
 ];
@@ -21,15 +23,14 @@ export function Navbar() {
   const { setTheme, theme } = useTheme();
   const isDark = theme === "dark";
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 10);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  React.useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <>
@@ -39,15 +40,12 @@ export function Navbar() {
           scrolled ? "shadow-sm" : "shadow-none"
         )}
       >
-        <div className="flex items-center justify-between px-4 py-3.5 lg:px-8">
+        <div className="flex items-center justify-between px-4 py-3 lg:px-8">
           <Link
             href="/"
             className="flex items-center gap-2 text-bangla font-bold text-lg tracking-tight"
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-              IB
-            </div>
-            <span className="text-inter">Intern<span className="text-primary">BD</span></span>
+            <Logo className="h-6 w-6" wordmark />
           </Link>
 
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-foreground/70">
@@ -81,7 +79,7 @@ export function Navbar() {
         </div>
 
         {open && (
-          <div className="lg:hidden bg-card border-b border-border absolute top-full left-0 right-0 z-40">
+          <div className="lg:hidden bg-card border-b border-border absolute top-full left-0 right-0 z-40 animate-slide-up">
             <div className="px-4 py-4 space-y-3">
               {NAV_LINKS.map((link) => (
                 <Link

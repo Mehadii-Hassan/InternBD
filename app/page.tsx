@@ -17,22 +17,26 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#content" className="skip-link">
+        Skip to content
+      </a>
+
       {/* Hero Section */}
-      <section className="relative bg-background border-b border-border py-16 lg:py-24 overflow-hidden">
+      <section className="relative bg-background border-b border-border py-12 lg:py-20 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mx-auto max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6 leading-[1.1] text-balance">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6 leading-[1.1] text-balance" id="content">
               Find Your First Internship in{" "}
               <span className="text-primary">Bangladesh</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               Discover verified internships in Dhaka, Chattogram, Sylhet, and across Bangladesh.
               Opportunities for students and fresh graduates in Software, Marketing, Design, Finance, HR, Data/AI, and more.
             </p>
 
             <div
               className={cn(
-                "bg-card border border-input rounded-xl p-1 shadow-sm flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto"
+                "bg-card border border-input rounded-md p-1 shadow-sm flex flex-col sm:flex-row gap-1 max-w-2xl mx-auto"
               )}
             >
               <div className="flex-1 relative">
@@ -42,11 +46,11 @@ export default async function HomePage() {
                 <input
                   type="text"
                   placeholder="Search by keyword, company, or title..."
-                  className="w-full pl-10 pr-4 py-3.5 rounded-lg border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
+                  className="w-full pl-10 pr-4 py-3 rounded-md border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
                 />
               </div>
               <select
-                className="px-4 py-3.5 rounded-lg border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
+                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
               >
                 <option value="">All Categories</option>
                 {CATEGORIES.map((c) => (
@@ -54,7 +58,7 @@ export default async function HomePage() {
                 ))}
               </select>
               <select
-                className="px-4 py-3.5 rounded-lg border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
+                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
               >
                 <option value="">All Locations</option>
                 {LOCATIONS.map((l) => (
@@ -62,19 +66,19 @@ export default async function HomePage() {
                 ))}
               </select>
               <select
-                className="px-4 py-3.5 rounded-lg border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
+                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
               >
                 <option value="">All Departments</option>
                 {DEPARTMENTS.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
-              <Button className="px-6 py-3.5 whitespace-nowrap">
+              <Button className="px-6 py-3 whitespace-nowrap">
                 <Search className="w-4 h-4 mr-2" /> Search
               </Button>
             </div>
 
-            <div className="mt-10 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+            <div className="mt-8 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
               <Counter value={stats.totalInternships} label="Total Internships" />
               <Counter value={stats.totalCompanies} label="Companies" />
               <Counter value={stats.newToday} label="Added Today" />
@@ -84,9 +88,9 @@ export default async function HomePage() {
       </section>
 
       {/* Latest Internships */}
-      <section className="py-16">
+      <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-foreground text-bangla mb-1">Latest Internships</h2>
               <p className="text-sm text-muted-foreground">
@@ -110,9 +114,9 @@ export default async function HomePage() {
       </section>
 
       {/* Browse by Category */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 bg-secondary/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-foreground text-bangla">Browse by Category</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -124,9 +128,9 @@ export default async function HomePage() {
       </section>
 
       {/* Browse by Location */}
-      <section className="py-16">
+      <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-foreground text-bangla">Browse by Location</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -134,7 +138,7 @@ export default async function HomePage() {
               <Link
                 key={loc}
                 href={`/internships?location=${encodeURIComponent(loc)}`}
-                className="flex items-center justify-between px-4 py-3 rounded-lg border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
+                className="flex items-center justify-between px-4 py-3 rounded-md border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">{loc}</span>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -145,9 +149,9 @@ export default async function HomePage() {
       </section>
 
       {/* Browse by Department */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 bg-secondary/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-foreground text-bangla">Browse by Department</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -155,7 +159,7 @@ export default async function HomePage() {
               <Link
                 key={dept}
                 href={`/internships?department=${encodeURIComponent(dept)}`}
-                className="flex items-center justify-between px-4 py-3 rounded-lg border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
+                className="flex items-center justify-between px-4 py-3 rounded-md border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">{dept}</span>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -166,9 +170,9 @@ export default async function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="py-16">
+      <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-foreground text-bangla mb-3">How it works</h2>
             <p className="text-muted-foreground">Simple steps to find your internship</p>
           </div>
@@ -188,7 +192,7 @@ export default async function HomePage() {
               },
             ].map((step, i) => (
               <div key={step.title} className="text-center">
-                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-4 text-foreground/60">
+                <div className="w-10 h-10 rounded-md bg-secondary flex items-center justify-center mx-auto mb-4 text-foreground/60">
                   {i === 0 ? (
                     <Search className="w-5 h-5" />
                   ) : i === 1 ? (
@@ -206,18 +210,18 @@ export default async function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16">
+      <section className="py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-xl bg-primary p-8 md:p-12 text-center">
+          <div className="rounded-md bg-primary p-8 md:p-12 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4 text-bangla">
               Hiring interns?
             </h2>
-            <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">
+            <p className="text-primary-foreground/80 mb-6 max-w-lg mx-auto">
               Post your internship for free and reach thousands of students and fresh graduates across Bangladesh.
             </p>
             <Link
               href="/post"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-md font-semibold text-sm hover:bg-primary/90 transition-colors"
             >
               <Play className="w-4 h-4" /> Post a Free Internship
             </Link>

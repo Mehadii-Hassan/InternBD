@@ -59,11 +59,9 @@ export default async function InternshipDetailPage({ params }: { params: Promise
           <div>
             <Link
               href="/internships"
-              className="inline-flex items-center gap-2 text-primary hover:text-primary/90 text-sm font-medium mb-4"
+              className="inline-flex items-center gap-2 text-primary hover:text-primary/90 text-sm font-medium mb-4 text-bangla flex items-center gap-2"
             >
-              <Link as="a" href="/internships" className="text-sm font-medium text-foreground hover:text-primary/90 text-bangla flex items-center gap-2">
-                <Link as="a" href="/internships" className="w-3 h-3" /> Back to all internships
-              </Link>
+              <span className="w-3 h-3" /> Back to all internships
             </Link>
           </div>
         </div>

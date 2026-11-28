@@ -43,6 +43,7 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        none: "0",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
@@ -81,9 +82,10 @@ module.exports = {
       },
       animation: {
         "fade-in": "fadeIn 0.2s ease-out forwards",
-        "slide-up": "slideUp 0.2s ease-out forwards",
+        "slide-up": "slideUp 0.3s ease-out forwards",
         "hover-lift": "hoverLift 0.2s ease-out forwards",
         "shimmer": "shimmer 1.5s infinite",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       keyframes: {
         fadeIn: {
