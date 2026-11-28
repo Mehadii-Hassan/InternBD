@@ -1,6 +1,26 @@
 # Local Development - InternBD
 
-## View the Site in VS Code (Two-Terminal Setup)
+## One-Command Verification (Recommended)
+
+Run everything from a single terminal:
+
+```powershell
+.\run-all.ps1
+```
+
+This script:
+1. Records internship counts before tests
+2. Starts the Next.js dev server in the background (`npm run dev`)
+3. Waits for `http://localhost:3000` to respond (60s timeout)
+4. Runs `node scripts/e2e.mjs` (E2E tests)
+5. Runs `node scripts/shots.mjs` (screenshots)
+6. Records counts again and verifies they match (no row leaks)
+7. Always stops the dev server and child processes
+8. Prints a final summary
+
+Screenshots are saved to `./screenshots/` (gitignored).
+
+## Two-Terminal Setup (Alternative)
 
 **Terminal 1** — Start the dev server:
 ```

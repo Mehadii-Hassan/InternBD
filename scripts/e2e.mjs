@@ -102,6 +102,29 @@ async function main() {
     const page = await browser.newPage();
     page.setDefaultTimeout(15000);
 
+    // Track console errors and 5xx responses per page
+    const consoleErrors = [];
+    const serverErrors = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        consoleErrors.push(msg.text());
+      }
+    });
+    page.on("response", (res) => {
+      if (res.status() >= 500) {
+        serverErrors.push(`${res.status()} ${res.url()}`);
+      }
+    });
+
+    function assertNoPageErrors(contextName) {
+      if (consoleErrors.length > 0) {
+        throw new Error(`${contextName}: console errors: ${consoleErrors.slice(0, 3).join(" | ")}`);
+      }
+      if (serverErrors.length > 0) {
+        throw new Error(`${contextName}: 5xx responses: ${serverErrors.slice(0, 3).join(" | ")}`);
+      }
+    }
+
     process.stdout.write("\n=== E2E Tests ===\n");
 
     // 1. Page loads
@@ -128,36 +151,50 @@ async function main() {
 
     for (const { url, name } of pages) {
       await test(`${name} page loads`, async () => {
+        consoleErrors.length = 0;
+        serverErrors.length = 0;
         const res = await page.goto(`${BASE}${url}`, { waitUntil: "domcontentloaded" });
+        assertNoPageErrors(name);
         if (!res || res.status() !== 200) throw new Error(`status ${res?.status()}`);
       })();
     }
 
     // 404 page
     await test("404 page returns 404", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       const res = await page.goto(`${BASE}/nonexistent`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("404 page");
       if (!res || res.status() !== 404) throw new Error(`status ${res?.status()}`);
     })();
 
     // 2. Home search sends to /internships with filters
     await test("Home search sends to /internships with filters", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("home before search");
       const searchInput = page.locator('input[name="q"]');
       if ((await searchInput.count()) === 0) throw new Error("No search input on home page");
       await searchInput.fill("software");
       await page.locator('form[action="/internships"] button[type="submit"]').click();
       await page.waitForURL((url) => url.pathname === "/internships" && url.searchParams.get("q") === "software", { timeout: 10000 });
+      assertNoPageErrors("home after search");
       const params = new URL(page.url()).searchParams;
       if (params.get("q") !== "software") throw new Error("Search did not navigate to /internships with q param");
     })();
 
     // 3. Filters on /internships - each filter changes results and URL
     await test("Category filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("internships before category");
       const categoryLink = page.locator('[data-testid="filter-category-Software/IT"]').first();
       if ((await categoryLink.count()) === 0) throw new Error("No category link found");
       await categoryLink.click();
       await page.waitForURL((url) => url.searchParams.get("category") === "Software/IT", { timeout: 10000 });
+      assertNoPageErrors("internships after category");
       const params = new URL(page.url()).searchParams;
       if (params.get("category") !== "Software/IT") throw new Error("Category not in URL");
       const body = await page.textContent("body");
@@ -165,84 +202,111 @@ async function main() {
     })();
 
     await test("Location filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships?location=Dhaka`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("internships location");
       const params = new URL(page.url()).searchParams;
       if (params.get("location") !== "Dhaka") throw new Error("Location not in URL");
     })();
 
     await test("Paid filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships?paid=Paid`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("internships paid");
       const params = new URL(page.url()).searchParams;
       if (params.get("paid") !== "Paid") throw new Error("Paid not in URL");
     })();
 
     await test("Department filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const deptLink = page.locator('[data-testid="filter-department-CSE"]').first();
       if ((await deptLink.count()) === 0) throw new Error("No department link found");
       await deptLink.click();
       await page.waitForURL((url) => url.searchParams.get("department") === "CSE", { timeout: 10000 });
+      assertNoPageErrors("internships after department");
       const params = new URL(page.url()).searchParams;
       if (params.get("department") !== "CSE") throw new Error("Department not in URL");
     })();
 
     await test("Work mode filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const modeLink = page.locator('[data-testid="filter-mode-Remote"]').first();
       if ((await modeLink.count()) === 0) throw new Error("No work mode link found");
       await modeLink.click();
       await page.waitForURL((url) => url.searchParams.get("mode") === "Remote", { timeout: 10000 });
+      assertNoPageErrors("internships after mode");
       const params = new URL(page.url()).searchParams;
       if (params.get("mode") !== "Remote") throw new Error("Work mode not in URL");
     })();
 
     await test("Duration filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const durLink = page.locator('[data-testid="filter-duration-3 months"]').first();
       if ((await durLink.count()) === 0) throw new Error("No duration link found");
       await durLink.click();
       await page.waitForURL((url) => url.searchParams.get("duration") === "3 months", { timeout: 10000 });
+      assertNoPageErrors("internships after duration");
       const params = new URL(page.url()).searchParams;
       if (params.get("duration") !== "3 months") throw new Error("Duration not in URL");
     })();
 
     await test("Deadline filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const dlLink = page.locator('[data-testid="filter-deadline-week"]').first();
       if ((await dlLink.count()) === 0) throw new Error("No deadline link found");
       await dlLink.click();
       await page.waitForURL((url) => url.searchParams.get("deadline") === "week", { timeout: 10000 });
+      assertNoPageErrors("internships after deadline");
       const params = new URL(page.url()).searchParams;
       if (params.get("deadline") !== "week") throw new Error("Deadline not in URL");
     })();
 
     await test("Posted filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const postedLink = page.locator('[data-testid="filter-posted-24h"]').first();
       if ((await postedLink.count()) === 0) throw new Error("No posted link found");
       await postedLink.click();
       await page.waitForURL((url) => url.searchParams.get("posted") === "24h", { timeout: 10000 });
+      assertNoPageErrors("internships after posted");
       const params = new URL(page.url()).searchParams;
       if (params.get("posted") !== "24h") throw new Error("Posted not in URL");
     })();
 
     await test("Verified only filter changes results and URL", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const verifiedLink = page.locator('[data-testid="filter-verified"]').first();
       if ((await verifiedLink.count()) === 0) throw new Error("No verified link found");
       await verifiedLink.click();
       await page.waitForURL((url) => url.searchParams.get("verified") === "true", { timeout: 10000 });
+      assertNoPageErrors("internships after verified");
       const params = new URL(page.url()).searchParams;
       if (params.get("verified") !== "true") throw new Error("Verified not in URL");
     })();
 
     // Clear-all
     await test("Clear-all removes all filters", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships?category=Software/IT&paid=Paid`, { waitUntil: "domcontentloaded" });
       const clearLink = page.locator('[data-testid="filter-chip-clear-all"]').first();
       if ((await clearLink.count()) === 0) throw new Error("No clear-all link found");
       await clearLink.click();
       await page.waitForTimeout(1000);
+      assertNoPageErrors("internships after clear-all");
       const params = new URL(page.url()).searchParams;
       if (params.get("category") || params.get("paid")) {
         throw new Error("Clear-all did not remove filters");
@@ -251,24 +315,32 @@ async function main() {
 
     // Pagination
     await test("Pagination works", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const page2Link = page.locator('[data-testid="page-2"]').first();
       if ((await page2Link.count()) === 0) throw new Error("No page 2 link found (may be only one page of results)");
       await page2Link.click();
       await page.waitForTimeout(1000);
+      assertNoPageErrors("internships after pagination");
       const params = new URL(page.url()).searchParams;
       if (params.get("page") !== "2") throw new Error("Pagination did not navigate to page 2");
     })();
 
     // 4. Bookmark + saved page
     await test("Bookmark and saved page works", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/saved`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("saved page");
       const body = await page.textContent("body");
       if (!body) throw new Error("Saved page empty");
     })();
 
     // 5. Vote real/fake from separate contexts
     await test("Vote Real and Fake from separate contexts", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
       const firstLink = page.locator('a[href^="/internship/"]').first();
       if ((await firstLink.count()) === 0) throw new Error("No internship links");
@@ -277,6 +349,7 @@ async function main() {
 
       // Context 1: vote Real
       await page.goto(`${BASE}${href}`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("detail page before vote");
       const realBtn = page.locator('button:has-text("Looks Real")');
       if ((await realBtn.count()) > 0) {
         await realBtn.click();
@@ -305,7 +378,10 @@ async function main() {
       const deadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
       // Submit post as stranger
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/post`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("post page before submit");
       await page.fill('input[name="company_name"]', "E2E Test Company");
       await page.fill('input[name="company_email"]', "hr@e2etest.example.com");
       await page.fill('input[name="title"]', "E2E Test Internship");
@@ -341,7 +417,10 @@ async function main() {
       createdPostIds.push(postId);
 
       // Admin login
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("admin login page");
       await page.fill('input[type="password"]', ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
       await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 10000 });
@@ -371,6 +450,8 @@ async function main() {
 
     // 7. Admin wrong password shows error
     await test("Admin wrong password shows error", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
       await page.fill('input[type="password"]', "wrongpassword");
       await page.click('button[type="submit"]');
@@ -383,7 +464,10 @@ async function main() {
 
     // 8. Admin dashboard redirects without login
     await test("Admin dashboard redirects without login", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/admin/dashboard`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("admin dashboard redirect");
       const url = page.url();
       if (!url.includes("/admin/login")) throw new Error("Did not redirect to login");
     })();
@@ -410,7 +494,10 @@ async function main() {
 
     // 10. Dark mode toggle persistence
     await test("Dark mode toggle works and persists", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("home before dark toggle");
       const html = page.locator("html");
       const toggle = page.locator('[data-testid="theme-toggle"]');
       if ((await toggle.count()) === 0) throw new Error("No theme toggle found");
@@ -437,7 +524,10 @@ async function main() {
 
     // 11. One footer only
     await test("Exactly one footer on pages", async () => {
+      consoleErrors.length = 0;
+      serverErrors.length = 0;
       await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+      assertNoPageErrors("home footer check");
       const footerCount = await page.locator("footer").count();
       if (footerCount !== 1) throw new Error(`Expected 1 footer, found ${footerCount}`);
     })();
