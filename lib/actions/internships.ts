@@ -36,10 +36,16 @@ export async function getInternships({
 }) {
   const supabase = createServiceClient();
 
+  const showSample = process.env.SHOW_SAMPLE_DATA === "true";
+
   let query = supabase
     .from("internships")
     .select("*", { count: "exact" })
     .eq("status", "approved");
+
+  if (!showSample) {
+    query = query.eq("is_sample", false);
+  }
 
   if (search) {
     query = query.ilike("title", `%${search}%`).or(`title.ilike.%${search}%,company_name.ilike.%${search}%`);
@@ -121,13 +127,19 @@ export async function getInternships({
 
 export async function getInternshipById(id: string) {
   const supabase = createServiceClient();
+  const showSample = process.env.SHOW_SAMPLE_DATA === "true";
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("internships")
     .select("*")
     .eq("id", id)
-    .eq("status", "approved")
-    .single();
+    .eq("status", "approved");
+
+  if (!showSample) {
+    query = query.eq("is_sample", false);
+  }
+
+  const { data, error } = await query.single();
 
   if (error) {
     return { internship: null, error: error.message };
@@ -138,14 +150,21 @@ export async function getInternshipById(id: string) {
 
 export async function getRelatedInternships(id: string, category: string, limit = 3) {
   const supabase = createServiceClient();
+  const showSample = process.env.SHOW_SAMPLE_DATA === "true";
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("internships")
     .select("*")
     .eq("category", category)
     .eq("status", "approved")
     .neq("id", id)
     .limit(limit);
+
+  if (!showSample) {
+    query = query.eq("is_sample", false);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return { internships: [], error: error.message };
@@ -156,15 +175,27 @@ export async function getRelatedInternships(id: string, category: string, limit 
 
 export async function getStats() {
   const supabase = createServiceClient();
+  const showSample = process.env.SHOW_SAMPLE_DATA === "true";
+
+  let totalQuery = supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "approved");
+  if (!showSample) {
+    totalQuery = totalQuery.eq("is_sample", false);
+  }
 
   const [{ data: total }, { data: companies }, { data: newToday }] = await Promise.all([
-    supabase.from("internships").select("*", { count: "exact", head: true }).eq("status", "approved"),
+    totalQuery,
     supabase.from("companies").select("slug", { count: "exact", head: true }).eq("is_sample", true),
-    supabase
-      .from("internships")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "approved")
-      .eq("is_sample", true),
+    (async () => {
+      let q = supabase
+        .from("internships")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "approved")
+        .eq("is_sample", true);
+      if (!showSample) {
+        q = q.eq("is_sample", false);
+      }
+      return q;
+    })(),
   ]);
 
   return {
@@ -176,21 +207,19 @@ export async function getStats() {
 
 export async function getFilterCounts() {
   const supabase = createServiceClient();
+  const showSample = process.env.SHOW_SAMPLE_DATA === "true";
 
-  const [catRes, locRes, deptRes] = await Promise.all([
-    supabase
-      .from("internships")
-      .select("category")
-      .eq("status", "approved"),
-    supabase
-      .from("internships")
-      .select("location")
-      .eq("status", "approved"),
-    supabase
-      .from("internships")
-      .select("department")
-      .eq("status", "approved"),
-  ]);
+  let catQuery = supabase.from("internships").select("category").eq("status", "approved");
+  let locQuery = supabase.from("internships").select("location").eq("status", "approved");
+  let deptQuery = supabase.from("internships").select("department").eq("status", "approved");
+
+  if (!showSample) {
+    catQuery = catQuery.eq("is_sample", false);
+    locQuery = locQuery.eq("is_sample", false);
+    deptQuery = deptQuery.eq("is_sample", false);
+  }
+
+  const [catRes, locRes, deptRes] = await Promise.all([catQuery, locQuery, deptQuery]);
 
   const countBy = (arr: any[], field: string) => {
     const counts: Record<string, number> = {};

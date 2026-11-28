@@ -1,5 +1,5 @@
-import React from 'react';
 import { getAdminStats } from "@/lib/actions/admin";
+import { RemoveSampleButton } from "@/components/admin/RemoveSampleButton";
 import { Users, Shield, Clock, Mail } from "lucide-react";
 
 interface StatCardProps {
@@ -36,6 +36,9 @@ export default async function AdminDashboard() {
         <h1 className="text-2xl font-bold text-foreground text-bangla mb-2">Admin Dashboard</h1>
         <p className="text-muted-foreground">Manage internships, reviews, and platform settings.</p>
       </div>
+
+      {/* Remove sample data action */}
+      <RemoveSampleButton total={stats.total} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

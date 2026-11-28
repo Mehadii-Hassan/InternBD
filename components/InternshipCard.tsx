@@ -49,6 +49,11 @@ export function InternshipCard({ internship }: InternshipCardProps) {
           </div>
 
           <div className="flex items-center gap-1.5 mb-2">
+            {internship.is_sample && (
+              <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/30">
+                Sample
+              </span>
+            )}
             <span
               className={cn(
                 "px-2 py-0.5 rounded text-[9px] font-medium",
