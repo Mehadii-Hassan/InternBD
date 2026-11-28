@@ -81,9 +81,16 @@ $shotsOutput = node scripts/shots.mjs 2>&1
 Write-Host $shotsOutput
 
 # --------------------------------------------------------------------
-# Step 6: Record counts AFTER tests
+# Step 6: Run audit
 # --------------------------------------------------------------------
-Write-Host "[6/8] Recording internship counts after tests..." -ForegroundColor Yellow
+Write-Host "[6/8] Running audit..." -ForegroundColor Yellow
+$auditOutput = node scripts/audit.mjs 2>&1
+Write-Host $auditOutput
+
+# --------------------------------------------------------------------
+# Step 7: Record counts AFTER tests
+# --------------------------------------------------------------------
+Write-Host "[7/8] Recording internship counts after tests..." -ForegroundColor Yellow
 $afterJson = node -e "
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
@@ -104,7 +111,7 @@ $after = $afterJson | ConvertFrom-Json -ErrorAction SilentlyContinue
 Write-Host "  After: approved=$($after.approved) total=$($after.total)" -ForegroundColor Green
 
 # --------------------------------------------------------------------
-# Step 7: Check counts match
+# Step 8: Check counts match
 # --------------------------------------------------------------------
 $countsMatch = ($before.approved -eq $after.approved) -and ($before.total -eq $after.total)
 if (-not $countsMatch) {
@@ -115,9 +122,9 @@ if (-not $countsMatch) {
 }
 
 # --------------------------------------------------------------------
-# Step 8: Always stop the dev server
+# Step 9: Always stop the dev server
 # --------------------------------------------------------------------
-Write-Host "[8/8] Stopping dev server..." -ForegroundColor Yellow
+Write-Host "[9/9] Stopping dev server..." -ForegroundColor Yellow
 try { Stop-Process -Id $serverProc.Id -Force -ErrorAction SilentlyContinue } catch {}
 try { Get-Process node | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}
 
@@ -130,10 +137,20 @@ $passedMatch = $e2eOutput -match "(\d+) passed"
 $failedMatch = $e2eOutput -match "(\d+) failed"
 $passed = if ($passedMatch) { $matches[1] } else { "?" }
 $failed = if ($failedMatch) { $matches[1] } else { "?" }
-Write-Host "  Tests: $passed passed, $failed failed"
+
+# Parse audit totals
+$auditCriticalMatch = $auditOutput -match "Critical: (\d+)"
+$auditHighMatch = $auditOutput -match "High: (\d+)"
+$auditMediumMatch = $auditOutput -match "Medium: (\d+)"
+$auditCritical = if ($auditCriticalMatch) { $matches[1] } else { "?" }
+$auditHigh = if ($auditHighMatch) { $matches[1] } else { "?" }
+$auditMedium = if ($auditMediumMatch) { $matches[1] } else { "?" }
+
+Write-Host "  E2E Tests: $passed passed, $failed failed"
+Write-Host "  Audit: Critical=$auditCritical, High=$auditHigh, Medium=$auditMedium"
 Write-Host "  Counts match: $countsMatch"
 Write-Host "  Screenshots: ./screenshots/ (gitignored)"
-if ($countsMatch -and $failed -eq 0) {
+if ($countsMatch -and $failed -eq 0 -and $auditCritical -eq 0 -and $auditHigh -eq 0) {
   Write-Host "  OVERALL: PASS" -ForegroundColor Green
 } else {
   Write-Host "  OVERALL: FAIL" -ForegroundColor Red
