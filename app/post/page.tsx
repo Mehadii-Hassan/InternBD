@@ -168,8 +168,9 @@ export default function PostPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Category</label>
+                <label htmlFor="category" className="text-sm font-medium text-foreground">Category</label>
                 <select
+                  id="category"
                   name="category"
                   defaultValue="Software/IT"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
@@ -182,8 +183,9 @@ export default function PostPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Location</label>
+                <label htmlFor="location" className="text-sm font-medium text-foreground">Location</label>
                 <select
+                  id="location"
                   name="location"
                   defaultValue="Dhaka"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
@@ -198,8 +200,9 @@ export default function PostPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Paid/Unpaid</label>
+                <label htmlFor="paid_status" className="text-sm font-medium text-foreground">Paid/Unpaid</label>
                 <select
+                  id="paid_status"
                   name="paid_status"
                   defaultValue="Paid"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
@@ -212,8 +215,9 @@ export default function PostPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Work Mode</label>
+                <label htmlFor="work_mode" className="text-sm font-medium text-foreground">Work Mode</label>
                 <select
+                  id="work_mode"
                   name="work_mode"
                   defaultValue="On-site"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
@@ -226,8 +230,9 @@ export default function PostPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Duration</label>
+                <label htmlFor="duration" className="text-sm font-medium text-foreground">Duration</label>
                 <select
+                  id="duration"
                   name="duration"
                   defaultValue="3 months"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
@@ -331,13 +336,14 @@ export default function PostPage() {
             <h2 className="text-lg font-bold text-foreground text-bangla flex items-center gap-2">
               <User className="w-4 h-4" /> Submitter Information
             </h2>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Who are you?</label>
-              <select
-                name="submitter_type"
-                defaultValue="community"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
-              >
+              <div className="space-y-2">
+                <label htmlFor="submitter_type" className="text-sm font-medium text-foreground">Who are you?</label>
+                <select
+                  id="submitter_type"
+                  name="submitter_type"
+                  defaultValue="community"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:ring-2 focus-ring-primary outline-none"
+                >
                 <option value="company_hr">Company HR</option>
                 <option value="student">Student</option>
                 <option value="community">Community Member</option>

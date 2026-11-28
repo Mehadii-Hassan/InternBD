@@ -392,8 +392,10 @@ async function checkButtons(page, route) {
     const text = await btn.textContent();
     const disabled = await btn.getAttribute("disabled");
     if (disabled) continue;
-    if (!text || text.trim().length === 0) {
-      addFinding(route, "button", "Button with no text content", "medium");
+    const textContent = text?.trim() || "";
+    const ariaLabel = await btn.getAttribute("aria-label");
+    if (!textContent && !ariaLabel) {
+      addFinding(route, "button", "Button with no text content or aria-label", "medium");
     }
   }
 }
