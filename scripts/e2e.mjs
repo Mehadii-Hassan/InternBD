@@ -442,7 +442,12 @@ async function main() {
         return rows.length > 0 || !!empty;
       }, { timeout: 10000 });
       const approveBtn = page.locator('button:has-text("Approve")').first();
-      if ((await approveBtn.count()) === 0) throw new Error("No approve button found on moderation page");
+      if ((await approveBtn.count()) === 0) {
+        const body = await page.textContent("body");
+        const hasAllCaughtUp = body.includes("All Caught Up");
+        const hasPending = body.includes("pending");
+        throw new Error("No approve button found on moderation page. Body length: " + body.length + ". Has 'All Caught Up': " + hasAllCaughtUp + ". Has 'pending': " + hasPending);
+      }
       await approveBtn.click();
       await page.waitForTimeout(2000);
 
