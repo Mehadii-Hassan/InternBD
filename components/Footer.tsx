@@ -79,21 +79,21 @@ export function Footer() {
             <h2 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">
               Connect
             </h2>
-            <div className="flex gap-3 text-foreground/40">
-              <a href="https://facebook.com/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
+            <div className="flex gap-3">
+              <a href="https://facebook.com/internbd" className="text-foreground hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 Facebook
               </a>
-              <a href="https://linkedin.com/company/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
+              <a href="https://linkedin.com/company/internbd" className="text-foreground hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 LinkedIn
               </a>
-              <a href="https://twitter.com/internbd" className="hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
+              <a href="https://twitter.com/internbd" className="text-foreground hover:text-foreground transition-colors" target="_blank" rel="noopener noreferrer">
                 Twitter
               </a>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center text-xs text-foreground/50">
+        <div className="mt-8 pt-8 border-t border-border text-center text-xs text-foreground">
           InternBD &copy; {new Date().getFullYear()}. Free internship discovery for Bangladeshi students.
         </div>
       </div>

@@ -20,9 +20,8 @@ export default async function HomePage() {
   const featured: Internship[] = featuredResult.internships || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <a href="#content" className="skip-link">Skip to content</a>
-      <main>
         {/* Hero Section - Left aligned */}
       <section className="relative bg-background border-b border-border py-12 lg:py-24 overflow-hidden dot-grid">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
@@ -238,6 +237,5 @@ export default async function HomePage() {
 
       <AdSlot placement="between-cards" />
       </main>
-    </div>
   );
 }
