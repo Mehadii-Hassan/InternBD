@@ -1,34 +1,53 @@
 "use client";
 
-interface AdSlotProps {
-  placement: "header" | "sidebar" | "between-cards" | "detail";
-  className?: string;
-}
+import { getAdSlots } from "@/lib/actions/internships";
+import { useState, useEffect } from "react";
 
-const AD_SIZES: Record<string, string> = {
-  header: "h-12 w-full",
-  sidebar: "h-[250px] w-full",
-  "between-cards": "h-10 w-full",
-  detail: "h-16 w-full",
-};
+export function AdSlot() {
+  const [adSlots, setAdSlots] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export function AdSlot({ placement, className }: AdSlotProps) {
-  const enabled =
-    typeof process !== "undefined" &&
-    process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true" &&
-    process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  useEffect(() => {
+    async function loadAdSlots() {
+      const { adSlots } = await getAdSlots();
+      // Filter active slots within date range
+      const now = new Date();
+      const active = adSlots.filter((slot) => {
+        if (!slot.is_active) return false;
+        if (slot.start_date && new Date(slot.start_date) > now) return false;
+        if (slot.end_date && new Date(slot.end_date) < now) return false;
+        return true;
+      });
+      setAdSlots(active);
+      setLoading(false);
+    }
+    loadAdSlots();
+  }, []);
 
-  if (!enabled) {
-    return null;
-  }
+  useEffect(() => {
+    // Track impression
+  }, [adSlots]);
+
+  const ad = adSlots[0];
+  if (!ad || loading) return null;
 
   return (
-    <div
-      className={`bg-muted/30 border border-border/30 rounded-lg flex items-center justify-center text-xs text-muted-foreground mb-4 ${AD_SIZES[placement]} ${className || ""}`}
-    >
-      <div className="flex flex-col items-center gap-1 opacity-60">
-        <span>Advertisement</span>
-        <span className="text-[10px]">AdSense &bull; {placement}</span>
+    <div className="bg-card border border-input rounded-xl p-6 my-6">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground shrink-0">
+          <span className="text-xs font-bold">{ad.title.charAt(0)}</span>
+        </div>
+        <div className="flex-1">
+          <a
+            href={ad.link_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <h3 className="text-sm font-medium text-foreground mb-1">{ad.title}</h3>
+            <p className="text-xs text-muted-foreground">{ad.description || ""}</p>
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -81,7 +81,7 @@ export default function SavedPage() {
         )}
 
         <div className="mt-8 lg:hidden">
-          <AdSlot placement="between-cards" />
+          <AdSlot />
         </div>
       </div>
     </div>

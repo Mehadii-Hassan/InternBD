@@ -235,7 +235,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <AdSlot placement="between-cards" />
+      <AdSlot />
       </main>
   );
 }

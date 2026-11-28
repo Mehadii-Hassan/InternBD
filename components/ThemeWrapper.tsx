@@ -35,11 +35,11 @@ export default function ThemeWrapper({ children }: { children: React.ReactNode }
   return (
     <NextThemesProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="internbd-theme">
       <Navbar />
-      <AdSlot placement="header" />
+      <AdSlot />
       <main>{children}</main>
       <Footer />
       <CookieNotice />
-      <AdSlot placement="detail" />
+      <AdSlot />
       {commandPaletteOpen && (
         <CommandPalette onClose={() => setCommandPaletteOpen(false)} />
       )}

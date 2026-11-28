@@ -6,6 +6,7 @@ import { getInternshipById, getRelatedInternships } from "@/lib/actions/internsh
 import { FakeReportWidget } from "@/components/FakeReportWidget";
 import { ShareButtons } from "@/components/ShareButtons";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { TrackInternshipView } from "@/components/TrackInternshipView";
 
 export const revalidate = 1800;
 
@@ -366,6 +367,7 @@ export default async function InternshipDetailPage({ params }: { params: Promise
           </a>
         </div>
       </div>
+      <TrackInternshipView internshipId={internship.id} />
     </div>
   );
 }

@@ -735,3 +735,306 @@ export async function removeAllSampleData() {
 
   return { success: true };
 }
+
+// ============================================================
+// Phase 4: Earning and Growth Features
+// ============================================================
+
+export async function createBoostRequest(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const internshipId = formData.get("internship_id") as string;
+  const companyName = formData.get("company_name") as string;
+  const companyEmail = formData.get("company_email") as string;
+  const amount = parseInt(formData.get("amount") as string) || 0;
+
+  if (!internshipId || !companyName || !companyEmail || !amount) {
+    return { success: false, error: "Required fields missing" };
+  }
+
+  const { error } = await supabase
+    .from("boost_requests")
+    .insert([
+      {
+        internship_id: internshipId,
+        company_name: companyName,
+        company_email: companyEmail,
+        amount: amount,
+        status: "pending",
+      },
+    ]);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function approveBoostRequest(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const boostRequestId = formData.get("boost_request_id") as string;
+  const featuredUntil = formData.get("featured_until") as string;
+
+  if (!boostRequestId || !featuredUntil) {
+    return { success: false, error: "Required fields missing" };
+  }
+
+  const { data: boostRequest } = await supabase
+    .from("boost_requests")
+    .select("*")
+    .eq("id", boostRequestId)
+    .single();
+
+  if (!boostRequest) {
+    return { success: false, error: "Boost request not found" };
+  }
+
+  await supabase
+    .from("boost_requests")
+    .update({ status: "paid", featured_until: featuredUntil })
+    .eq("id", boostRequestId);
+
+  await supabase
+    .from("internships")
+    .update({ is_featured: true, featured_until: featuredUntil })
+    .eq("id", boostRequest.internship_id);
+
+  return { success: true };
+}
+
+export async function rejectBoostRequest(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const boostRequestId = formData.get("boost_request_id") as string;
+
+  if (!boostRequestId) {
+    return { success: false, error: "Boost request ID required" };
+  }
+
+  await supabase.from("boost_requests").update({ status: "rejected" }).eq("id", boostRequestId);
+
+  return { success: true };
+}
+
+export async function getBoostRequests() {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("boost_requests")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { boostRequests: [], error: error.message };
+  }
+
+  return { boostRequests: data || [], error: null };
+}
+
+export async function createAdSlot(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string || null;
+  const imageUrl = formData.get("image_url") as string;
+  const linkUrl = formData.get("link_url") as string;
+  const isActive = formData.get("is_active") === "true";
+  const startDate = formData.get("start_date") as string || null;
+  const endDate = formData.get("end_date") as string || null;
+
+  if (!title || !imageUrl || !linkUrl) {
+    return { success: false, error: "Required fields missing" };
+  }
+
+  const { error } = await supabase
+    .from("ad_slots")
+    .insert([
+      {
+        title,
+        description,
+        image_url: imageUrl,
+        link_url: linkUrl,
+        is_active: isActive,
+        start_date: startDate || null,
+        end_date: endDate || null,
+      },
+    ]);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function updateAdSlot(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const adSlotId = formData.get("ad_slot_id") as string;
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string || null;
+  const imageUrl = formData.get("image_url") as string;
+  const linkUrl = formData.get("link_url") as string;
+  const isActive = formData.get("is_active") === "true";
+  const startDate = formData.get("start_date") as string || null;
+  const endDate = formData.get("end_date") as string || null;
+
+  if (!adSlotId) {
+    return { success: false, error: "Ad slot ID required" };
+  }
+
+  const { error } = await supabase
+    .from("ad_slots")
+    .update({
+      title,
+      description,
+      image_url: imageUrl,
+      link_url: linkUrl,
+      is_active: isActive,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", adSlotId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function deleteAdSlot(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const adSlotId = formData.get("ad_slot_id") as string;
+
+  if (!adSlotId) {
+    return { success: false, error: "Ad slot ID required" };
+  }
+
+  const { error } = await supabase.from("ad_slots").delete().eq("id", adSlotId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function getAdSlots() {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("ad_slots")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { adSlots: [], error: error.message };
+  }
+
+  return { adSlots: data || [], error: null };
+}
+
+export async function trackInternshipView(internshipId: string) {
+  const supabase = createServiceClient();
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data: existing } = await supabase
+    .from("internship_views")
+    .select("views")
+    .eq("internship_id", internshipId)
+    .eq("view_date", today)
+    .single();
+
+  if (existing) {
+    await supabase
+      .from("internship_views")
+      .update({ views: existing.views + 1 })
+      .eq("internship_id", internshipId)
+      .eq("view_date", today);
+  } else {
+    await supabase.from("internship_views").insert([
+      {
+        internship_id: internshipId,
+        view_date: today,
+        views: 1,
+        apply_clicks: 0,
+      },
+    ]);
+  }
+}
+
+export async function trackApplyClick(internshipId: string) {
+  const supabase = createServiceClient();
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data: existing } = await supabase
+    .from("internship_views")
+    .select("apply_clicks")
+    .eq("internship_id", internshipId)
+    .eq("view_date", today)
+    .single();
+
+  if (existing) {
+    await supabase
+      .from("internship_views")
+      .update({ apply_clicks: existing.apply_clicks + 1 })
+      .eq("internship_id", internshipId)
+      .eq("view_date", today);
+  } else {
+    await supabase.from("internship_views").insert([
+      {
+        internship_id: internshipId,
+        view_date: today,
+        views: 0,
+        apply_clicks: 1,
+      },
+    ]);
+  }
+}
+
+export async function getInternshipStats(internshipId: string) {
+  const supabase = createServiceClient();
+
+  const { data: views } = await supabase
+    .from("internship_views")
+    .select("views, apply_clicks")
+    .eq("internship_id", internshipId);
+
+  const totalViews = views?.reduce((sum, v) => sum + v.views, 0) || 0;
+  const totalClicks = views?.reduce((sum, v) => sum + v.apply_clicks, 0) || 0;
+
+  return { totalViews, totalClicks };
+}
+
+export async function subscribeEmail(formData: FormData) {
+  const supabase = createServiceClient();
+
+  const email = formData.get("email") as string;
+  const category = formData.get("category") as string || null;
+  const location = formData.get("location") as string || null;
+
+  if (!email) {
+    return { success: false, error: "Email required" };
+  }
+
+  const { error } = await supabase
+    .from("email_subscribers")
+    .insert([
+      {
+        email,
+        category,
+        location,
+      },
+    ]);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
