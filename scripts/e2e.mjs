@@ -415,7 +415,10 @@ async function main() {
 
       if (!posts || posts.length === 0) {
         const body = await page.textContent("body");
-        throw new Error(`Post submission did not succeed. Post not found in database. Body length: ${body.length}. Has error text: ${body.includes("error") || body.includes("Error")}`);
+        // Extract error message from page
+        const errorMatch = body.match(/bg-destructive\/10[^>]*>([^<]+)</);
+        const errorText = errorMatch ? errorMatch[1].trim() : "unknown error";
+        throw new Error(`Post submission did not succeed. Post not found in database. Page error: "${errorText}"`);
       }
 
       const postId = posts[0].id;
