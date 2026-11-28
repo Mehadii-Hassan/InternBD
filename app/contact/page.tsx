@@ -13,7 +13,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <main className="min-h-screen bg-background py-8">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground text-bangla mb-2">Contact Us</h1>
@@ -27,35 +27,39 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Name</label>
+                  <label htmlFor="name" className="text-sm font-medium text-foreground">Name</label>
                   <input
+                    id="name"
                     type="text"
                     required
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
                   <input
+                    id="email"
                     type="email"
                     required
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Subject</label>
+                <label htmlFor="subject" className="text-sm font-medium text-foreground">Subject</label>
                 <input
+                  id="subject"
                   type="text"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Message</label>
+                <label htmlFor="message" className="text-sm font-medium text-foreground">Message</label>
                 <textarea
+                  id="message"
                   rows={5}
                   required
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
                 />
               </div>
               <button
@@ -98,6 +102,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

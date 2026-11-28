@@ -3,15 +3,15 @@ import { Building2, Users, ShieldCheck, Clock, MapPin, Mail } from "lucide-react
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <a href="#content" className="skip-link">Skip to content</a>
 
       <section className="py-16 lg:py-24 border-b border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground text-bangla mb-4" id="content">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground text-bangla mb-4" id="content">
               About InternBD
-            </h2>
+            </h1>
             <p className="text-lg text-muted-foreground">
               Bangladesh's trusted platform for discovering verified internships. We connect students
               and fresh graduates with real opportunities across the country.
@@ -121,6 +121,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
