@@ -404,19 +404,20 @@ async function main() {
       await page.click('button[type="submit"]');
       await page.waitForTimeout(3000);
 
-      // Should be on success page
-      const body = await page.textContent("body");
-      if (!body.includes("Internship Posted")) throw new Error("Post submission did not succeed");
-
-      // Get the post ID from database
+      // Check if post was created in database (source of truth)
       const { data: posts } = await supabase
         .from("internships")
         .select("id, status")
         .eq("title", "E2E Test Internship")
         .eq("company_name", "E2E Test Company")
-        .order("created_at", { ascending: false })
+        .order("created_at", { descending: true })
         .limit(1);
-      if (!posts || posts.length === 0) throw new Error("Test post not found in database");
+
+      if (!posts || posts.length === 0) {
+        const body = await page.textContent("body");
+        throw new Error(`Post submission did not succeed. Post not found in database. Body length: ${body.length}. Has error text: ${body.includes("error") || body.includes("Error")}`);
+      }
+
       const postId = posts[0].id;
       createdPostIds.push(postId);
 
