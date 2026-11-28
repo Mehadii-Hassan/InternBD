@@ -435,7 +435,12 @@ async function main() {
 
       // Go to moderation and approve
       await page.goto(`${BASE}/admin/moderate`, { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(2000);
+      // Wait for pending internships to load (either the table or "All Caught Up" message)
+      await page.waitForFunction(() => {
+        const rows = document.querySelectorAll('tbody tr');
+        const empty = document.querySelector('text:is(:contains("All Caught Up"))');
+        return rows.length > 0 || !!empty;
+      }, { timeout: 10000 });
       const approveBtn = page.locator('button:has-text("Approve")').first();
       if ((await approveBtn.count()) === 0) throw new Error("No approve button found on moderation page");
       await approveBtn.click();
@@ -486,19 +491,21 @@ async function main() {
     await test("Admin logout works", async () => {
       // Clear any existing admin cookies first
       await page.context().clearCookies();
-      // Log in first
-      await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
-      await page.fill('input[type="password"]', ADMIN_PASSWORD);
-      await page.click('button[type="submit"]');
-      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 15000 });
+      // Log in via API
+      const loginRes = await page.request.post(`${BASE}/api/admin/login`, {
+        form: { password: ADMIN_PASSWORD }
+      });
+      const loginResult = await loginRes.json();
+      if (!loginResult.success) throw new Error("Admin login API failed");
 
-      // Call logout API - clears the cookie
-      await fetch(`${BASE}/api/admin/logout`, { method: "POST" });
+      // Call logout API
+      await page.request.post(`${BASE}/api/admin/logout`, { method: "POST" });
 
-      // Verify admin cookie is cleared and /admin redirects to login
-      await page.goto(`${BASE}/admin/dashboard`, { waitUntil: "domcontentloaded" });
-      const finalUrl = page.url();
-      if (!finalUrl.includes("/admin/login")) throw new Error("Logout did not work - still accessing admin dashboard");
+      // Verify admin cookie is cleared - accessing dashboard should redirect to login
+      const dashboardRes = await page.request.get(`${BASE}/admin/dashboard`);
+      if (!dashboardRes.url().includes("/admin/login")) {
+        throw new Error("Logout did not work - dashboard still accessible after logout");
+      }
     })();
 
     // 10. Dark mode toggle persistence
