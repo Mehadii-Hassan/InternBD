@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function GoPage({ params }: { params: { id: string } }) {
+export default function GoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = params as unknown as { id: string };
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -11,7 +12,7 @@ export default function GoPage({ params }: { params: { id: string } }) {
     async function loadApplyLink() {
       try {
         // Fetch the internship to get the apply link
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/internships?id=eq.${params.id}&select=apply_link,apply_email`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/internships?id=eq.${id}&select=apply_link,apply_email`, {
           headers: {
             apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""}`,
@@ -30,7 +31,7 @@ export default function GoPage({ params }: { params: { id: string } }) {
       }
     }
     loadApplyLink();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (

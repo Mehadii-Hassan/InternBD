@@ -1,0 +1,18 @@
+# Don't deploy scraper scripts
+scraper/
+
+# Don't deploy screenshots
+screenshots/
+
+# Don't deploy test files
+tests/
+test-results/
+
+# Don't deploy local env
+.env.local
+
+# Don't deploy node_modules
+node_modules/
+
+# Don't deploy Next.js cache
+.next/
