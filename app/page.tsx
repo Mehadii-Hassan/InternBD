@@ -34,49 +34,42 @@ export default async function HomePage() {
               Opportunities for students and fresh graduates in Software, Marketing, Design, Finance, HR, Data/AI, and more.
             </p>
 
-            <div
-              className={cn(
-                "bg-card border border-input rounded-md p-1 shadow-sm flex flex-col sm:flex-row gap-1 max-w-2xl mx-auto"
-              )}
-            >
+            <form action="/internships" method="get" className={cn(
+              "bg-card border border-input rounded-md p-1 shadow-sm flex flex-col sm:flex-row gap-1 max-w-2xl mx-auto"
+            )}>
               <div className="flex-1 relative">
                 <Search
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
                 />
                 <input
+                  name="q"
                   type="text"
                   placeholder="Search by keyword, company, or title..."
                   className="w-full pl-10 pr-4 py-3 rounded-md border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
                 />
               </div>
-              <select
-                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
+              <select name="category" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Categories</option>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <select
-                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
+              <select name="location" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Locations</option>
                 {LOCATIONS.map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
               </select>
-              <select
-                className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48"
-              >
+              <select name="department" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Departments</option>
                 {DEPARTMENTS.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
-              <Button className="px-6 py-3 whitespace-nowrap">
+              <Button type="submit" className="px-6 py-3 whitespace-nowrap">
                 <Search className="w-4 h-4 mr-2" /> Search
               </Button>
-            </div>
+            </form>
 
             <div className="mt-8 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
               <Counter value={stats.totalInternships} label="Total Internships" />

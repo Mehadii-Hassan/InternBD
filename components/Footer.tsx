@@ -5,11 +5,12 @@ import Link from "next/link";
 const FOOTER_LINKS = [
   { label: "About", href: "/about" },
   { label: "How it works", href: "/about" },
-  { label: "FAQ", href: "/about" },
-  { label: "For Employers", href: "/post" },
+  { label: "FAQ", href: "/faq" },
+  { label: "For Employers", href: "/for-employers" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
-  { label: "Safety Tips", href: "/safety" },
+  { label: "Disclaimer", href: "/disclaimer" },
+  { label: "Safety Tips", href: "/safety-tips" },
   { label: "Contact", href: "/contact" },
   { label: "Post an Internship", href: "/post" },
 ];

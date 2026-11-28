@@ -7,11 +7,15 @@ if (!existsSync(SCREENSHOTS_DIR)) {
   mkdirSync(SCREENSHOTS_DIR, { recursive: true });
 }
 
+const BASE = "http://localhost:3000";
+
 const pages = [
-  { url: "http://localhost:3000/", name: "home", label: "Home" },
-  { url: "http://localhost:3000/internships", name: "listings", label: "Listings" },
-  { url: "http://localhost:3000/post", name: "post", label: "Post" },
-  { url: "http://localhost:3000/admin/login", name: "admin-login", label: "Admin Login" },
+  { url: "/", name: "home" },
+  { url: "/internships?category=Software/IT", name: "listings-filtered" },
+  { url: "/internship/4a43fbc9-5b3b-4970-9c18-941abc931235", name: "detail" },
+  { url: "/post", name: "post" },
+  { url: "/admin/login", name: "admin" },
+  { url: "/faq", name: "faq" },
 ];
 
 const viewports = [
@@ -24,12 +28,12 @@ const themes = ["light", "dark"];
 async function main() {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
+  page.setDefaultTimeout(15000);
 
   let count = 0;
   const total = pages.length * viewports.length * themes.length;
 
   for (const theme of themes) {
-    // Set theme via localStorage before navigation
     await page.evaluate((t) => {
       localStorage.setItem("theme", t);
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -40,28 +44,31 @@ async function main() {
 
       for (const p of pages) {
         try {
-          const res = await page.goto(p.url, { waitUntil: "domcontentloaded", timeout: 10000 });
+          const res = await page.goto(`${BASE}${p.url}`, {
+            waitUntil: "domcontentloaded",
+            timeout: 15000,
+          });
           if (!res || res.status() !== 200) {
-            console.log(`SKIP ${p.label} ${vp.name} ${theme}: status ${res?.status()}`);
+            process.stdout.write(`SKIP ${p.label ?? p.name} ${vp.name} ${theme}: status ${res?.status()}\n`);
             continue;
           }
-          await page.waitForTimeout(1000); // let animations settle
+          await page.waitForTimeout(1000);
           const file = join(SCREENSHOTS_DIR, `${p.name}-${vp.name}-${theme}.png`);
           await page.screenshot({ path: file, fullPage: true });
           count++;
-          console.log(`OK ${p.label} ${vp.name} ${theme}`);
+          process.stdout.write(`OK ${p.name} ${vp.name} ${theme}\n`);
         } catch (e) {
-          console.log(`FAIL ${p.label} ${vp.name} ${theme}: ${e.message}`);
+          process.stdout.write(`FAIL ${p.name} ${vp.name} ${theme}: ${e.message}\n`);
         }
       }
     }
   }
 
   await browser.close();
-  console.log(`\nScreenshots: ${count}/${total} saved to ${SCREENSHOTS_DIR}`);
+  process.stdout.write(`\nScreenshots: ${count}/${total} saved to ${SCREENSHOTS_DIR}\n`);
 }
 
 main().catch((e) => {
-  console.error(e);
+  process.stderr.write(`FATAL: ${e.message}\n`);
   process.exit(1);
 });

@@ -6,6 +6,20 @@
 2. **Open Simple Browser**: Press `Ctrl+Shift+P` > "Simple Browser: Show" > enter `http://localhost:3000`
 3. **Mobile view**: In Simple Browser, use the device toolbar or resize the window to test mobile layouts
 
+## Run Tests
+
+**E2E tests** (requires dev server on port 3000; script starts/stops it automatically):
+```
+node scripts/e2e.mjs
+```
+
+**Screenshots** (requires dev server on port 3000; script starts/stops it automatically):
+```
+node scripts/shots.mjs
+```
+
+Screenshots are saved to `/screenshots` (gitignored).
+
 ## Available Pages
 
 | Page | URL |
@@ -21,6 +35,8 @@
 | Locations | /locations |
 | Location Detail | /location/[slug] |
 | About | /about |
+| FAQ | /faq |
+| Disclaimer | /disclaimer |
 | Contact | /contact |
 | Saved | /saved |
 | Admin Login | /admin/login |
@@ -39,3 +55,10 @@ Required environment variables in `.env.local`:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
 - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
 - `ADMIN_PASSWORD` - Admin dashboard password
+
+## Performance
+
+Production build (`npm run build` then `npm run start`):
+- Static pages (home, about, contact, etc.): ~100-250ms
+- SSR pages (/internships, /companies): ~800-1500ms cold, faster when cached
+- Detail pages (/internship/[id]): ~1200ms
