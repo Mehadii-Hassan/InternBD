@@ -1,6 +1,8 @@
 "use server";
 
 import { createServiceClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/actions/rateLimit";
+import { headers } from "next/headers";
 import type { Internship } from "@/lib/types";
 
 export async function getInternships({
@@ -264,6 +266,16 @@ export async function getCompanies() {
 }
 
 export async function createInternship(formData: FormData) {
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+             headersList.get("x-real-ip") || 
+             "unknown";
+
+  const rateLimitResult = await rateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return { success: false, error: "Too many requests. Please try again later." };
+  }
+
   const supabase = createServiceClient();
 
   const title = formData.get("title") as string;
@@ -423,6 +435,16 @@ export async function createInternship(formData: FormData) {
 }
 
 export async function createRemovalRequest(formData: FormData) {
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+             headersList.get("x-real-ip") || 
+             "unknown";
+
+  const rateLimitResult = await rateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return { success: false, error: "Too many requests. Please try again later." };
+  }
+
   const supabase = createServiceClient();
 
   const internshipId = formData.get("internship_id") as string;
@@ -454,6 +476,16 @@ export async function createRemovalRequest(formData: FormData) {
 }
 
 export async function voteOnInternship(formData: FormData) {
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+             headersList.get("x-real-ip") || 
+             "unknown";
+
+  const rateLimitResult = await rateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return { success: false, error: "Too many requests. Please try again later." };
+  }
+
   const supabase = createServiceClient();
 
   const internshipId = formData.get("internship_id") as string;

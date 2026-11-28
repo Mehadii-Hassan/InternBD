@@ -3,8 +3,20 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { rateLimit } from "@/lib/actions/rateLimit";
 
 export async function verifyAdminPassword(formData: FormData) {
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+             headersList.get("x-real-ip") || 
+             "unknown";
+
+  const rateLimitResult = await rateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return { success: false, error: "Too many requests. Please try again later." };
+  }
+
   const password = formData.get("password") as string;
   const expectedPassword = process.env.ADMIN_PASSWORD;
 
