@@ -24,7 +24,7 @@ const COMPANY_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border mt-auto">
+    <footer className="border-t border-border mt-auto bg-background">
       <div className="px-4 py-12 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-10">
           <div className="col-span-2 md:col-span-3">
@@ -40,7 +40,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Platform</h4>
+            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+              Platform
+            </h4>
             <ul className="space-y-2">
               {COMPANY_LINKS.map((link) => (
                 <li key={link.label}>
@@ -56,7 +58,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Legal</h4>
+            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+              Legal
+            </h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.slice(4, 8).map((link) => (
                 <li key={link.label}>
@@ -72,7 +76,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Connect</h4>
+            <h4 className="text-xs font-semibold text-foreground mb-3 uppercase tracking-wider">
+              Connect
+            </h4>
             <div className="flex gap-3 text-foreground/40">
               <a href="#" className="hover:text-foreground transition-colors">
                 Facebook

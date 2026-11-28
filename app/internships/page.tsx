@@ -103,9 +103,7 @@ export default async function InternshipsPage({
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <a href="#content" className="skip-link">
-        Skip to content
-      </a>
+      <a href="#content" className="skip-link">Skip to content</a>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
           <div>
@@ -126,7 +124,7 @@ export default async function InternshipsPage({
           </div>
 
           <div className="mt-4 flex items-center gap-2 text-sm font-medium text-foreground">
-            <span>{total}</span>{" "}
+            <span className="font-semibold tabular-nums">{total}</span>{" "}
             internship{total !== 1 ? "s" : ""} found
           </div>
 

@@ -36,8 +36,10 @@ export function Navbar() {
     <>
       <nav
         className={cn(
-          "sticky top-0 z-40 border-b border-border/50 backdrop-blur-md transition-all duration-300",
-          scrolled ? "shadow-sm" : "shadow-none"
+          "sticky top-0 z-40 border-b border-border/60 transition-all duration-300",
+          scrolled
+            ? "bg-background/90 backdrop-blur-sm shadow-sm"
+            : "bg-background/80 backdrop-blur-sm shadow-none"
         )}
       >
         <div className="flex items-center justify-between px-4 py-3 lg:px-8">

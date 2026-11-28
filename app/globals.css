@@ -4,27 +4,35 @@
 
 @layer base {
   :root {
-    /* Light mode - clean white, true dark text */
+    /* Light mode - clean white background */
     --background: 0 0% 100%;
     --foreground: 220 12% 10%;
     --card: 0 0% 100%;
     --card-foreground: 220 12% 10%;
-    /* Primary: deep brand blue used sparingly */
-    --primary: 220 80% 50%;
+    /* Primary: deep green-teal (Bangladesh nod) - used sparingly */
+    --primary: 170 62% 32%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 170 62% 25%;
+    /* Accent: warm coral/amber - ONLY for urgency */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
     /* Secondary: subtle gray */
     --secondary: 220 10% 96%;
     --secondary-foreground: 220 12% 10%;
+    /* Muted */
     --muted: 220 10% 96%;
-    --muted-foreground: 220 9% 50%;
-    --accent: 220 80% 50%;
-    --accent-foreground: 0 0% 100%;
+    --muted-foreground: 220 9% 45%;
+    /* Destructive */
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
+    /* Borders: hairline */
     --border: 220 12% 88%;
     --input: 220 12% 88%;
-    --ring: 220 80% 50%;
-    --radius: 0.375rem;
+    --ring: 170 62% 32%;
+    /* Radius */
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
+    /* Fonts */
     --font-inter: "Inter", sans-serif;
     --font-hind-siliguri: "Hind Siliguri", sans-serif;
   }
@@ -35,19 +43,20 @@
     --foreground: 210 25% 96%;
     --card: 222 18% 9%;
     --card-foreground: 210 25% 96%;
-    --primary: 220 80% 55%;
+    --primary: 170 62% 45%;
     --primary-foreground: 222 18% 7%;
+    --primary-hover: 170 62% 55%;
+    --accent: 25 95% 58%;
+    --accent-foreground: 222 18% 7%;
     --secondary: 220 12% 12%;
     --secondary-foreground: 210 25% 96%;
     --muted: 220 12% 12%;
     --muted-foreground: 220 10% 55%;
-    --accent: 220 80% 55%;
-    --accent-foreground: 222 18% 7%;
     --destructive: 0 65% 50%;
     --destructive-foreground: 210 25% 96%;
     --border: 220 12% 16%;
     --input: 220 12% 16%;
-    --ring: 220 80% 55%;
+    --ring: 170 62% 45%;
   }
 }
 
@@ -57,24 +66,63 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
     line-height: 1.5;
+    font-family: var(--font-inter);
   }
   html {
     scroll-behavior: smooth;
   }
-}
-
-@layer utilities {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-inter);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  h1 { font-size: 2.25rem; line-height: 1.1; }
+  h2 { font-size: 1.875rem; line-height: 1.15; }
+  h3 { font-size: 1.5rem; line-height: 1.2; }
+  h4 { font-size: 1.25rem; line-height: 1.25; }
   .text-bangla {
     font-family: var(--font-hind-siliguri);
-  }
-  .text-inter {
-    font-family: var(--font-inter);
   }
   .text-balance {
     text-wrap: balance;
   }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .container-custom {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .focus-ring:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted)) / 50 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .dot-grid {
+    background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -102,43 +150,9 @@
   @apply bg-muted-foreground/30;
 }
 
-/* Skip link */
 .skip-link {
   @apply absolute -top-10 left-4 bg-primary px-3 py-1.5 text-xs text-primary-foreground rounded-md z-50 transition-all;
 }
 .skip-link:focus {
   @apply top-4;
-}
-
-/* Focus styles */
-.focus-ring:focus-visible {
-  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-}
-
-/* Skeleton shimmer */
-.skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 0%,
-    hsl(var(--muted)) / 50 50%,
-    hsl(var(--muted)) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Page transition */
-.page-enter {
-  opacity: 0;
-  transform: translateY(4px);
-}
-.page-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }

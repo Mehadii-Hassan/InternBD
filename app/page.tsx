@@ -8,34 +8,36 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, LOCATIONS, DEPARTMENTS } from "@/data/internships";
 import { getStats, getInternships } from "@/lib/actions/internships";
+import type { Internship } from "@/lib/types";
+import { FramerMotion } from "@/components/FramerMotion";
 
 export default async function HomePage() {
-  const [stats, featured] = await Promise.all([
+  const [stats, featuredResult] = await Promise.all([
     getStats(),
-    getInternships({ limit: 6, sort: "newest" }),
+    getInternships({ limit: 3, sort: "newest" }),
   ]);
+
+  const featured: Internship[] = featuredResult.internships || [];
 
   return (
     <div className="min-h-screen bg-background">
-      <a href="#content" className="skip-link">
-        Skip to content
-      </a>
+      <a href="#content" className="skip-link">Skip to content</a>
 
-      {/* Hero Section */}
-      <section className="relative bg-background border-b border-border py-12 lg:py-20 overflow-hidden">
+      {/* Hero Section - Left aligned */}
+      <section className="relative bg-background border-b border-border py-12 lg:py-24 overflow-hidden dot-grid">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mx-auto max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6 leading-[1.1] text-balance" id="content">
-              Find Your First Internship in{" "}
+          <div className="max-w-2xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6 leading-[1.1]" id="content">
+              Find your first internship in{" "}
               <span className="text-primary">Bangladesh</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover verified internships in Dhaka, Chattogram, Sylhet, and across Bangladesh.
+            <p className="text-lg text-muted-foreground mb-8 max-w-none leading-relaxed">
+              Verified internships in Dhaka, Chattogram, Sylhet, and across Bangladesh.
               Opportunities for students and fresh graduates in Software, Marketing, Design, Finance, HR, Data/AI, and more.
             </p>
 
             <form action="/internships" method="get" className={cn(
-              "bg-card border border-input rounded-md p-1 shadow-sm flex flex-col sm:flex-row gap-1 max-w-2xl mx-auto"
+              "bg-card border border-input rounded-lg p-1 shadow-sm flex flex-col sm:flex-row gap-1 max-w-2xl"
             )}>
               <div className="flex-1 relative">
                 <Search
@@ -48,12 +50,6 @@ export default async function HomePage() {
                   className="w-full pl-10 pr-4 py-3 rounded-md border-transparent bg-transparent focus:ring-2 focus-ring-primary outline-none text-foreground placeholder-text-muted-foreground"
                 />
               </div>
-              <select name="category" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
-                <option value="">All Categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
               <select name="location" className="px-4 py-3 rounded-md border border-input bg-background text-foreground outline-none focus:ring-2 focus-ring-primary sm:w-48">
                 <option value="">All Locations</option>
                 {LOCATIONS.map((l) => (
@@ -66,14 +62,30 @@ export default async function HomePage() {
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
-              <Button type="submit" className="px-6 py-3 whitespace-nowrap">
+              <Button type="submit" className="px-6 py-3 whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
                 <Search className="w-4 h-4 mr-2" /> Search
               </Button>
             </form>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+            {/* Quick-pick chips */}
+            <div className="mt-6 flex flex-wrap gap-2">
+              {["Software", "Marketing", "Remote", "Paid"].map((chip) => (
+                <Link
+                  key={chip}
+                  href={`/internships?q=${encodeURIComponent(chip)}`}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium border border-input bg-background text-foreground hover:bg-secondary hover:border-primary transition-colors"
+                >
+                  {chip}
+                </Link>
+              ))}
+            </div>
+
+            {/* Live stats strip */}
+            <div className="mt-8 flex flex-wrap items-center gap-4 max-w-none border-t border-border pt-6">
               <Counter value={stats.totalInternships} label="Total Internships" />
+              <span className="w-px h-4 bg-border mx-1" />
               <Counter value={stats.totalCompanies} label="Companies" />
+              <span className="w-px h-4 bg-border mx-1" />
               <Counter value={stats.newToday} label="Added Today" />
             </div>
           </div>
@@ -87,7 +99,7 @@ export default async function HomePage() {
             <div>
               <h2 className="text-2xl font-bold text-foreground text-bangla mb-1">Latest Internships</h2>
               <p className="text-sm text-muted-foreground">
-                {featured.internships.length} opportunity available
+                {featured.length} new opportunity available
               </p>
             </div>
             <Link
@@ -99,8 +111,10 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.internships.map((internship) => (
-              <InternshipCard key={internship.id} internship={internship} />
+            {featured.map((internship) => (
+              <FramerMotion key={internship.id}>
+                <InternshipCard internship={internship} />
+              </FramerMotion>
             ))}
           </div>
         </div>
@@ -131,7 +145,7 @@ export default async function HomePage() {
               <Link
                 key={loc}
                 href={`/internships?location=${encodeURIComponent(loc)}`}
-                className="flex items-center justify-between px-4 py-3 rounded-md border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
+                className="flex items-center justify-between px-4 py-3 rounded-lg border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">{loc}</span>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -152,7 +166,7 @@ export default async function HomePage() {
               <Link
                 key={dept}
                 href={`/internships?department=${encodeURIComponent(dept)}`}
-                className="flex items-center justify-between px-4 py-3 rounded-md border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
+                className="flex items-center justify-between px-4 py-3 rounded-lg border border-input bg-card hover:bg-secondary hover:border-primary transition-colors group"
               >
                 <span className="text-sm font-medium text-foreground text-bangla">{dept}</span>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -165,7 +179,7 @@ export default async function HomePage() {
       {/* How it works */}
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground text-bangla mb-3">How it works</h2>
             <p className="text-muted-foreground">Simple steps to find your internship</p>
           </div>
@@ -185,7 +199,7 @@ export default async function HomePage() {
               },
             ].map((step, i) => (
               <div key={step.title} className="text-center">
-                <div className="w-10 h-10 rounded-md bg-secondary flex items-center justify-center mx-auto mb-4 text-foreground/60">
+                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mx-auto mb-4 text-foreground/60">
                   {i === 0 ? (
                     <Search className="w-5 h-5" />
                   ) : i === 1 ? (
@@ -205,7 +219,7 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-md bg-primary p-8 md:p-12 text-center">
+          <div className="rounded-lg bg-primary p-8 md:p-12 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4 text-bangla">
               Hiring interns?
             </h2>
@@ -214,7 +228,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/post"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-md font-semibold text-sm hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
             >
               <Play className="w-4 h-4" /> Post a Free Internship
             </Link>
