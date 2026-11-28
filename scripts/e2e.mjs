@@ -441,7 +441,7 @@ async function main() {
         const empty = document.querySelector('text:is(:contains("All Caught Up"))');
         return rows.length > 0 || !!empty;
       }, { timeout: 10000 });
-      const approveBtn = page.locator('button:has-text("Approve")').first();
+      const approveBtn = page.locator('button[title="Approve"]').first();
       if ((await approveBtn.count()) === 0) {
         const body = await page.textContent("body");
         const hasAllCaughtUp = body.includes("All Caught Up");
