@@ -136,6 +136,7 @@ export default async function InternshipsPage({
               {activeFilters.map((f) => (
                 <Link
                   key={`${f.key}-${f.value}`}
+                  data-testid={`filter-chip-${f.key}-${f.value}`}
                   href={buildUrl({ [f.key]: null })}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 transition-colors"
                 >
@@ -145,6 +146,7 @@ export default async function InternshipsPage({
                 </Link>
               ))}
               <Link
+                data-testid="filter-chip-clear-all"
                 href={buildUrl({
                   q: null,
                   category: null,
@@ -188,6 +190,7 @@ export default async function InternshipsPage({
                   {CATEGORIES.map((cat) => (
                     <Link
                       key={cat}
+                      data-testid={`filter-category-${cat}`}
                       href={buildUrl({ category: cat === category ? null : cat })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         category === cat
@@ -208,6 +211,7 @@ export default async function InternshipsPage({
                   {LOCATIONS.map((loc) => (
                     <Link
                       key={loc}
+                      data-testid={`filter-location-${loc}`}
                       href={buildUrl({ location: loc === location ? null : loc })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         location === loc
@@ -228,6 +232,7 @@ export default async function InternshipsPage({
                   {DEPARTMENTS.map((dept) => (
                     <Link
                       key={dept}
+                      data-testid={`filter-department-${dept}`}
                       href={buildUrl({ department: dept === department ? null : dept })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         department === dept
@@ -248,6 +253,7 @@ export default async function InternshipsPage({
                   {WORK_MODES.map((m) => (
                     <Link
                       key={m}
+                      data-testid={`filter-mode-${m}`}
                       href={buildUrl({ mode: m === mode ? null : m })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         mode === m
@@ -268,6 +274,7 @@ export default async function InternshipsPage({
                   {PAID_STATUSES.map((p) => (
                     <Link
                       key={p}
+                      data-testid={`filter-paid-${p}`}
                       href={buildUrl({ paid: p === paid ? null : p })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         paid === p
@@ -288,6 +295,7 @@ export default async function InternshipsPage({
                   {DURATIONS.map((d) => (
                     <Link
                       key={d}
+                      data-testid={`filter-duration-${d}`}
                       href={buildUrl({ duration: d === duration ? null : d })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         duration === d
@@ -308,6 +316,7 @@ export default async function InternshipsPage({
                   {DEADLINE_OPTIONS.map((o) => (
                     <Link
                       key={o.value}
+                      data-testid={`filter-deadline-${o.value}`}
                       href={buildUrl({ deadline: deadline === o.value ? null : o.value })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         deadline === o.value
@@ -328,6 +337,7 @@ export default async function InternshipsPage({
                   {POSTED_OPTIONS.map((o) => (
                     <Link
                       key={o.value}
+                      data-testid={`filter-posted-${o.value}`}
                       href={buildUrl({ posted: posted === o.value ? null : o.value })}
                       className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                         posted === o.value
@@ -339,6 +349,7 @@ export default async function InternshipsPage({
                     </Link>
                   ))}
                   <Link
+                    data-testid="filter-verified"
                     href={buildUrl({ verified: verified ? null : "true" })}
                     className={`px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
                       verified
@@ -371,6 +382,7 @@ export default async function InternshipsPage({
                     Try adjusting your filters or search terms to see more results.
                   </p>
                   <Link
+                    data-testid="filter-chip-clear-all"
                     href={buildUrl({
                       q: null,
                       category: null,
@@ -397,6 +409,7 @@ export default async function InternshipsPage({
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <Link
                       key={p}
+                      data-testid={`page-${p}`}
                       href={buildUrl({ page: String(p) })}
                       className={`px-4 py-2 rounded-md border transition-colors text-sm font-medium ${
                         page === p

@@ -9,7 +9,7 @@ import { AdSlot } from "@/components/AdSlot";
 
 export default function ThemeWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem>
       <Navbar />
       <AdSlot placement="header" />
       <main>{children}</main>

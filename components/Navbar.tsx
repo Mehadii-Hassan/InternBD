@@ -62,6 +62,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-3">
             <button
+              data-testid="theme-toggle"
               onClick={() => setTheme(isDark ? "light" : "dark")}
               className="p-2 rounded-md text-foreground/70 hover:bg-secondary hover:text-foreground transition-colors"
               aria-label="Toggle dark mode"
