@@ -326,33 +326,39 @@ export async function createInternship(formData: FormData) {
     }
   }
 
-  // Determine status: auto-approve if company is trusted
-  const companySlug = companyName.toLowerCase().replace(/\s+/g, "-");
-  const { data: company } = await supabase
+  // Normalize company name (trim, lowercase) for slug generation and comparison
+  const normalizedCompanyName = companyName.trim();
+  const companySlug = normalizedCompanyName.toLowerCase().replace(/\s+/g, "-");
+
+  // Ensure company exists (FK constraint on company_slug).
+  // INSERT ONLY — never update or touch is_trusted/is_verified/website/logo of an existing company.
+  // Public submissions always create companies with is_trusted = false.
+  // Ensure company exists (FK constraint on company_slug).
+  // SELECT-then-INSERT only — never UPDATE or touch is_trusted/is_verified/website/logo of an existing company.
+  // Public submissions always create companies with is_trusted = false.
+  const { data: existingCompany } = await supabase
     .from("companies")
-    .select("is_trusted")
+    .select("slug")
     .eq("slug", companySlug)
     .single();
 
-  const isTrustedCompany = company?.is_trusted || false;
-
-  // Ensure company exists (FK constraint on company_slug)
-  await supabase.from("companies").upsert(
-    {
+  if (!existingCompany) {
+    await supabase.from("companies").insert({
       slug: companySlug,
-      name: companyName,
+      name: normalizedCompanyName,
       is_trusted: false,
       is_sample: false,
-    },
-    { onConflict: "slug" },
-  );
+    });
+  }
 
+  // Public submissions always start as 'pending'. Never auto-approve, even for trusted companies.
+  // Auto-approve is reserved for scraper-inserted rows from trusted sources only.
   const { data, error } = await supabase
     .from("internships")
     .insert([
       {
         title,
-        company_name: companyName,
+        company_name: normalizedCompanyName,
         company_slug: companySlug,
         company_logo_url: companyLogoUrl || null,
         company_email: submitterEmail || companyEmail || null,
@@ -373,7 +379,7 @@ export async function createInternship(formData: FormData) {
         apply_email: applyEmail || null,
         source: submitterType === "company_hr" ? "hr" : "community",
         source_name: submitterType === "company_hr" ? "HR Submission" : "Community Submission",
-        status: isTrustedCompany ? "approved" : "pending",
+        status: "pending",
         is_verified: false,
         is_featured: false,
         is_sample: false,
@@ -386,7 +392,7 @@ export async function createInternship(formData: FormData) {
     return { success: false, error: error.message };
   }
 
-  return { success: true, id: data.id, autoApproved: isTrustedCompany };
+  return { success: true, id: data.id, autoApproved: false };
 }
 
 export async function createRemovalRequest(formData: FormData) {
