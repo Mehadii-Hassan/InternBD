@@ -429,6 +429,7 @@ async function main() {
       // Clear any existing admin cookies from previous tests
       await page.context().clearCookies();
       await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
+      await page.waitForTimeout(500);
       assertNoPageErrors("admin login page");
       await page.fill('input[type="password"]', ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
