@@ -1,10 +1,11 @@
 "use server";
 
 import { createServiceClient } from "@/lib/supabase/server";
-import type { Internship, Category, Location, Department, PaidStatus, WorkMode, Duration } from "@/lib/types";
+import type { Internship } from "@/lib/types";
 
 export async function getInternships({
   search,
+  company,
   category,
   location,
   department,
@@ -19,6 +20,7 @@ export async function getInternships({
   limit = 12,
 }: {
   search?: string;
+  company?: string;
   category?: string;
   location?: string;
   department?: string;
@@ -41,6 +43,9 @@ export async function getInternships({
 
   if (search) {
     query = query.ilike("title", `%${search}%`).or(`title.ilike.%${search}%,company_name.ilike.%${search}%`);
+  }
+  if (company) {
+    query = query.eq("company_name", company);
   }
   if (category) query = query.eq("category", category);
   if (location) query = query.eq("location", location);
@@ -203,13 +208,38 @@ export async function getFilterCounts() {
   };
 }
 
+export async function getCompanies() {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("internships")
+    .select("company_name")
+    .eq("status", "approved");
+
+  if (error) {
+    return { companies: [], error: error.message };
+  }
+
+  const counts: Record<string, number> = {};
+  for (const row of data || []) {
+    const name = row.company_name;
+    if (name) counts[name] = (counts[name] || 0) + 1;
+  }
+
+  const companies = Object.entries(counts).map(([name, count]) => ({
+    name,
+    count,
+  }));
+
+  return { companies, error: null };
+}
+
 export async function createInternship(formData: FormData) {
   const supabase = createServiceClient();
 
   const title = formData.get("title") as string;
   const companyName = formData.get("company_name") as string;
   const companyEmail = formData.get("company_email") as string;
-  const companyWebsite = formData.get("company_website") as string;
   const companyLogoUrl = formData.get("company_logo_url") as string;
   const category = formData.get("category") as string;
   const location = formData.get("location") as string;

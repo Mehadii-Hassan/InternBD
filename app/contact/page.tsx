@@ -1,13 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { Mail, MapPin, Phone, MessageSquare } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setTimeout(() => setSubmitting(false), 1500);
@@ -32,7 +31,7 @@ export default function ContactPage() {
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -40,7 +39,7 @@ export default function ContactPage() {
                   <input
                     type="email"
                     required
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
                   />
                 </div>
               </div>
@@ -48,7 +47,7 @@ export default function ContactPage() {
                 <label className="text-sm font-medium text-foreground">Subject</label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
                 />
               </div>
               <div className="space-y-2">
@@ -56,7 +55,7 @@ export default function ContactPage() {
                 <textarea
                   rows={5}
                   required
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
                 />
               </div>
               <button
@@ -97,12 +96,6 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-12 pt-8 border-t">
-          <Link href="/" className="text-primary hover:text-primary/90 font-medium">
-            ← Back to home
-          </Link>
         </div>
       </div>
     </div>

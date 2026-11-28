@@ -4,14 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Briefcase,
-  MapPin,
-  Clock,
   Mail,
   Building2,
   CheckCircle,
-  Shield,
   User,
-  Link as LinkIcon,
 } from "lucide-react";
 import {
   CATEGORIES,
@@ -21,29 +17,6 @@ import {
   DURATIONS,
 } from "@/lib/types";
 import { createInternship } from "@/lib/actions/internships";
-
-const INITIAL_FORM = {
-  companyName: "",
-  companyWebsite: "",
-  companyEmail: "",
-  companyLogoUrl: "",
-  title: "",
-  category: "Software/IT",
-  location: "Dhaka",
-  paidStatus: "Paid",
-  workMode: "On-site",
-  duration: "3 months",
-  stipend: "",
-  deadline: "",
-  description: "",
-  requirements: "",
-  responsibilities: "",
-  howToApply: "",
-  applyLink: "",
-  applyEmail: "",
-  submitterType: "community",
-  submitterEmail: "",
-};
 
 export default function PostPage() {
   const [submitting, setSubmitting] = useState(false);
@@ -97,7 +70,7 @@ export default function PostPage() {
       }
       setAutoApproved(result.autoApproved || false);
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError("Failed to submit. Please try again.");
       setSubmitting(false);
     }

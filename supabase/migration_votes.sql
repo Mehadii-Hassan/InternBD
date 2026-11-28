@@ -72,7 +72,8 @@ GRANT ALL ON public.admin_actions TO service_role;
 -- 5. Row Level Security
 -- ============================================================
 
--- Votes: public can insert votes; public can read vote summaries (not voter_hash)
+-- Votes: public can insert votes, but NOT read them (voter_hash is sensitive)
+-- anon can insert votes; aggregated counts are read from internships table (real_votes, fake_votes, trust_score)
 ALTER TABLE public.votes ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Public can insert votes" ON public.votes;
@@ -82,11 +83,6 @@ CREATE POLICY "Public can insert votes"
   ON public.votes FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
-
-CREATE POLICY "Public can read vote summaries"
-  ON public.votes FOR SELECT
-  TO anon, authenticated
-  USING (true);
 
 -- Removal requests: public can insert
 ALTER TABLE public.removal_requests ENABLE ROW LEVEL SECURITY;

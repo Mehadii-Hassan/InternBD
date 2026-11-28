@@ -72,9 +72,3 @@ declare module "lucide-react" {
   export const Phone: any;
   export const MessageSquare: any;
 }
-
-declare global {
-  interface LayoutProps {
-    children: React.ReactNode;
-  }
-}

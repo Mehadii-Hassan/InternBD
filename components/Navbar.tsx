@@ -4,8 +4,7 @@ import * as React from 'react';
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Menu, Moon, Sun, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [

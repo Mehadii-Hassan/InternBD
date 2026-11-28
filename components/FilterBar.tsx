@@ -1,28 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import {
-  Filter,
-  Clock,
-  Briefcase,
-  Home,
-  SortAsc,
-  ArrowUpDown,
-} from "lucide-react";
-import Link from "next/link";
-
+import { useCallback, useState } from "react";
+import { Filter, ArrowUpDown } from "lucide-react";
 import {
   CATEGORIES,
   LOCATIONS,
   PAID_STATUSES,
   WORK_MODES,
   DURATIONS,
-  Category,
-  Location,
-  PaidStatus,
-  WorkMode,
-  Duration,
-} from "@/lib/types";
+} from "@/data/internships";
 
 interface FilterState {
   category: string;

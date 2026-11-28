@@ -1,12 +1,13 @@
-import React from 'react';
+import { getFilterCounts } from "@/lib/actions/internships";
 import Link from "next/link";
-import { LOCATIONS, SAMPLE_INTERNSHIPS } from "@/data/internships";
 
-export default function LocationsPage() {
-  const locationsWithCounts = LOCATIONS.map((loc) => ({
-    name: loc,
-    count: SAMPLE_INTERNSHIPS.filter((i) => i.location === loc).length,
-  }));
+export default async function LocationsPage() {
+  const { locations } = await getFilterCounts();
+
+  const locationsWithCounts = Object.entries(locations).map(([name, count]) => ({
+    name,
+    count,
+  })).sort((a, b) => b.count - a.count);
 
   return (
     <div className="min-h-screen bg-background py-8">

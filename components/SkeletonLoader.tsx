@@ -8,7 +8,7 @@ export function SkeletonLoader({ className = "" }: { className?: string }) {
   );
 }
 
-export function SkeletonCard({ className = "" }: { className?: string }) {
+export function SkeletonCard() {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="h-48 bg-muted w-full" />

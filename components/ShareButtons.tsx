@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2, Mail, Link as LinkIcon, Copy } from "lucide-react";
+import { Share2, Mail, Link as LinkIcon } from "lucide-react";
 
 interface ShareButtonsProps {
   url: string;

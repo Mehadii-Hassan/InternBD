@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { verifyAdminPassword } from "@/lib/actions/admin";
 
 export async function POST(request: Request) {

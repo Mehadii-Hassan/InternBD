@@ -22,13 +22,19 @@ test.describe('InternBD - Page Load Tests', () => {
   pages.forEach(({ url, name }) => {
     test(`${name} page loads`, async ({ page }) => {
       const response = await page.goto(url, { timeout: 10000 });
-      expect(response.status()).toBe(200);
+      expect(response).not.toBeNull();
+      if (response) {
+        expect(response.status()).toBe(200);
+      }
     });
   });
 
   test('404 page returns 404', async ({ page }) => {
     const response = await page.goto('http://localhost:3000/nonexistent');
-    expect(response.status()).toBe(404);
+    expect(response).not.toBeNull();
+    if (response) {
+      expect(response.status()).toBe(404);
+    }
   });
 });
 

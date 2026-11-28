@@ -13,21 +13,22 @@ export function Counter({ value, label, suffix = "" }: CounterProps) {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    let start = 0;
     const duration = 1000;
     const startTime = Date.now();
+    let frame: number;
 
-    function animate() {
+    const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const current = Math.floor(progress * value);
       setDisplayValue(current);
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frame = requestAnimationFrame(animate);
       }
-    }
+    };
 
     animate();
+    return () => cancelAnimationFrame(frame);
   }, [value]);
 
   return (

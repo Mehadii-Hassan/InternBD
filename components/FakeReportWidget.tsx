@@ -3,17 +3,25 @@
 import { useState } from "react";
 import { ThumbsUp, ThumbsDown, Flag } from "lucide-react";
 
-export function FakeReportWidget() {
+interface FakeReportWidgetProps {
+  currentRealVotes: number;
+  currentFakeVotes: number;
+}
+
+export function FakeReportWidget({ currentRealVotes, currentFakeVotes }: FakeReportWidgetProps) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
+
+  const total = currentRealVotes + currentFakeVotes;
+  const fakeShare = total > 0 ? (currentFakeVotes / total) * 100 : 0;
 
   return (
     <div className="bg-muted/50 border border-border rounded-xl p-6 mt-8">
       <div className="flex items-start gap-3">
         <Flag className="w-5 h-5 text-foreground/50 mt-0.5" />
         <div>
-          <h3 className="font-medium text-foreground mb-2 text-sm">Looks fake? Report it</h3>
+          <h3 className="font-medium text-foreground mb-2 text-sm">Community Trust</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Help us keep InternBD trustworthy. Vote if this listing seems suspicious.
+            {total} community vote{total !== 1 ? "s" : ""} — {fakeShare.toFixed(0)}% flagged as fake
           </p>
           <div className="flex items-center gap-4">
             <button
@@ -24,7 +32,7 @@ export function FakeReportWidget() {
                   : "bg-white border border-border hover:bg-green-50/50 hover:text-green-600"
               }`}
             >
-              <ThumbsUp className="w-4 h-4" /> Helpful
+              <ThumbsUp className="w-4 h-4" /> Real
             </button>
             <button
               onClick={() => setVote("down")}
@@ -34,7 +42,7 @@ export function FakeReportWidget() {
                   : "bg-white border border-border hover:bg-red-50/50 hover:text-red-600"
               }`}
             >
-              <ThumbsDown className="w-4 h-4" /> Not helpful
+              <ThumbsDown className="w-4 h-4" /> Fake
             </button>
           </div>
         </div>

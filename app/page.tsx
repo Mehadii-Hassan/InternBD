@@ -1,16 +1,20 @@
-import React from 'react';
 import Link from "next/link";
-import { Search, Building2, ArrowRight, Play } from "lucide-react";
+import { Search, Building2, ArrowRight, Play, Clock } from "lucide-react";
 import { Counter } from "@/components/Counter";
 import { CategoryChip } from "@/components/CategoryChip";
 import { InternshipCard } from "@/components/InternshipCard";
 import { AdSlot } from "@/components/AdSlot";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
-import { SAMPLE_INTERNSHIPS, CATEGORIES, LOCATIONS, DEPARTMENTS, STATS } from "@/data/internships";
+import { CATEGORIES, LOCATIONS, DEPARTMENTS } from "@/data/internships";
+import { getStats, getInternships } from "@/lib/actions/internships";
 
 export default async function HomePage() {
+  const [stats, featured] = await Promise.all([
+    getStats(),
+    getInternships({ limit: 6, sort: "newest" }),
+  ]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -71,9 +75,9 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-10 flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
-              <Counter value={STATS.totalInternships} label="Total Internships" />
-              <Counter value={STATS.totalCompanies} label="Companies" />
-              <Counter value={STATS.newToday} label="Added Today" />
+              <Counter value={stats.totalInternships} label="Total Internships" />
+              <Counter value={stats.totalCompanies} label="Companies" />
+              <Counter value={stats.newToday} label="Added Today" />
             </div>
           </div>
         </div>
@@ -86,7 +90,7 @@ export default async function HomePage() {
             <div>
               <h2 className="text-2xl font-bold text-foreground text-bangla mb-1">Latest Internships</h2>
               <p className="text-sm text-muted-foreground">
-                {SAMPLE_INTERNSHIPS.length} opportunity available
+                {featured.internships.length} opportunity available
               </p>
             </div>
             <Link
@@ -98,7 +102,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SAMPLE_INTERNSHIPS.map((internship) => (
+            {featured.internships.map((internship) => (
               <InternshipCard key={internship.id} internship={internship} />
             ))}
           </div>
@@ -222,8 +226,6 @@ export default async function HomePage() {
       </section>
 
       <AdSlot placement="between-cards" />
-
-      <Footer />
     </div>
   );
 }

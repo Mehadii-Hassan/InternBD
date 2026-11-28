@@ -4,8 +4,6 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const ADMIN_PASSWORD_HASH_KEY = "internbd_admin_hash";
-
 export async function verifyAdminPassword(formData: FormData) {
   const password = formData.get("password") as string;
   const expectedPassword = process.env.ADMIN_PASSWORD;

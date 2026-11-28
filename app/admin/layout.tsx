@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { LogOut, Settings, Users, Shield, FileText, BarChart3 } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   async function handleLogout() {

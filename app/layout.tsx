@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Inter } from "next/font/google";
+import { Hind_Siliguri } from "next/font/google";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import "@/app/globals.css";
 
-declare global {
-  interface LayoutProps<T = {}> {
-    children: ReactNode;
-  }
-}
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", weight: ["300", "400", "500", "600", "700"] });
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["latin", "bengali"],
+  variable: "--font-hind-siliguri",
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://internbd.com"),
@@ -23,10 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
+    <html lang="en" className={inter.variable}>
+      <body className={`${hindSiliguri.variable} font-sans antialiased`}>
         <ThemeWrapper>{children}</ThemeWrapper>
       </body>
     </html>

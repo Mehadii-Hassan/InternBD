@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FramerMotion } from "@/components/FramerMotion";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { MapPin, Layers } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { VoteWidget } from "@/components/vote/VoteWidget";
 import type { Internship } from "@/lib/types";
 import { cn } from "@/lib/utils";

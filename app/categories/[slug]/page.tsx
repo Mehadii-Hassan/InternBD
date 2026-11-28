@@ -1,12 +1,12 @@
-import React from 'react';
 import Link from "next/link";
-import { SAMPLE_INTERNSHIPS, CATEGORIES } from "@/data/internships";
+import { getInternships } from "@/lib/actions/internships";
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const categoryName = params.slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-  const internships = SAMPLE_INTERNSHIPS.filter((i) => i.category === categoryName);
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const categoryName = resolvedParams.slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const { internships } = await getInternships({ category: categoryName });
 
-  if (internships.length === 0) {
+  if (!internships || internships.length === 0) {
     return (
       <div className="min-h-screen bg-background py-8">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center py-20">

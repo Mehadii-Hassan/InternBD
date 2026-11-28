@@ -215,19 +215,14 @@ CREATE POLICY "Public can insert reports"
   TO anon, authenticated
   WITH CHECK (true);
 
--- Votes: public can insert votes, read own vote via voter_hash is not exposed publicly
--- anon can insert votes; public can read aggregated vote counts (not individual voter hashes)
+-- Votes: public can insert votes, but NOT read them (voter_hash is sensitive)
+-- anon can insert votes; aggregated counts are read from internships table (real_votes, fake_votes, trust_score)
 ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public can insert votes"
   ON votes FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
-
-CREATE POLICY "Public can read vote summaries"
-  ON votes FOR SELECT
-  TO anon, authenticated
-  USING (true);
 
 -- Removal requests: public can insert, service role reads all
 ALTER TABLE removal_requests ENABLE ROW LEVEL SECURITY;

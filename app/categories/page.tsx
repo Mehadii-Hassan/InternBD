@@ -1,12 +1,13 @@
-import React from 'react';
+import { getFilterCounts } from "@/lib/actions/internships";
 import Link from "next/link";
-import { CATEGORIES, SAMPLE_INTERNSHIPS } from "@/data/internships";
 
-export default function CategoriesPage() {
-  const categoriesWithCounts = CATEGORIES.map((cat) => ({
-    name: cat,
-    count: SAMPLE_INTERNSHIPS.filter((i) => i.category === cat).length,
-  }));
+export default async function CategoriesPage() {
+  const { categories } = await getFilterCounts();
+
+  const categoriesWithCounts = Object.entries(categories).map(([name, count]) => ({
+    name,
+    count,
+  })).sort((a, b) => b.count - a.count);
 
   return (
     <div className="min-h-screen bg-background py-8">

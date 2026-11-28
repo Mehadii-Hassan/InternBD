@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getPendingInternships, moderateInternship } from "@/lib/actions/admin";
-import { Shield, X, Edit, Trash2, Check, ChevronRight } from "lucide-react";
+import { Shield, X, Trash2, Check, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 interface PendingInternship {

@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { createRemovalRequest } from "@/lib/actions/internships";
-import { Mail } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
-export default function ReportPage({ params }: { params: { id: string } }) {
+export default function ReportPage() {
+  const params = useParams();
+  const id = (params?.id as string) || "";
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +24,7 @@ export default function ReportPage({ params }: { params: { id: string } }) {
     } catch {
       setError("Failed to submit. Please try again.");
       setSubmitting(false);
+      return;
     }
   }
 
@@ -29,7 +32,7 @@ export default function ReportPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-background py-8">
       <div className="mx-auto max-w-md px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-foreground text-bangla mb-6">Report Fake Listing</h1>
-        
+
         {error && (
           <div className="mb-6 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
             {error}
@@ -37,15 +40,15 @@ export default function ReportPage({ params }: { params: { id: string } }) {
         )}
 
         <form action={handleSubmit} className="space-y-5 bg-card border border-input rounded-xl p-6">
-          <input type="hidden" name="internship_id" value={params.id} />
+          <input type="hidden" name="internship_id" value={id} />
           <input type="hidden" name="post_url" value={typeof window !== "undefined" ? window.location.href : ""} />
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Reason</label>
             <select
               name="reason"
               required
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
             >
               <option value="">Select a reason</option>
               <option value="asked_money">Asked for money or payment</option>
@@ -56,17 +59,17 @@ export default function ReportPage({ params }: { params: { id: string } }) {
               <option value="other">Other</option>
             </select>
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Your Email (optional)</label>
             <input
               name="requester_email"
               type="email"
               placeholder="you@example.com"
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus-ring-primary outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary outline-none"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={submitting}
