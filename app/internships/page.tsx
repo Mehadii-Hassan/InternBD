@@ -95,7 +95,9 @@ export default async function InternshipsPage({
         next.set(key, value);
       }
     }
-    next.set("page", "1");
+    if (overrides.page === undefined) {
+      next.set("page", "1");
+    }
     return `?${next.toString()}`;
   }
 

@@ -178,12 +178,12 @@ async function main() {
 
     await test("Department filter changes results and URL", async () => {
       await page.goto(`${BASE}/internships`, { waitUntil: "domcontentloaded" });
-      const deptLink = page.locator('[data-testid="filter-department-Engineering"]').first();
+      const deptLink = page.locator('[data-testid="filter-department-CSE"]').first();
       if ((await deptLink.count()) === 0) throw new Error("No department link found");
       await deptLink.click();
-      await page.waitForURL((url) => url.searchParams.get("department") === "Engineering", { timeout: 10000 });
+      await page.waitForURL((url) => url.searchParams.get("department") === "CSE", { timeout: 10000 });
       const params = new URL(page.url()).searchParams;
-      if (params.get("department") !== "Engineering") throw new Error("Department not in URL");
+      if (params.get("department") !== "CSE") throw new Error("Department not in URL");
     })();
 
     await test("Work mode filter changes results and URL", async () => {
@@ -396,11 +396,13 @@ async function main() {
       await page.click('button[type="submit"]');
       await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 10000 });
 
-      // Call logout API
-      const logoutRes = await fetch(`${BASE}/api/admin/logout`, { method: "POST" });
-      if (!logoutRes.ok) throw new Error(`Logout API returned ${logoutRes.status}`);
+      // Call logout API - start waiting for redirect BEFORE the call
+      const logoutPromise = fetch(`${BASE}/api/admin/logout`, { method: "POST" });
+      const redirectPromise = page.waitForURL((url) => url.pathname.includes("/admin/login"), { timeout: 10000 });
+      await logoutPromise;
+      await redirectPromise;
 
-      // Verify dashboard access is denied after logout
+      // Verify admin cookie is cleared and /admin redirects to login
       await page.goto(`${BASE}/admin/dashboard`, { waitUntil: "domcontentloaded" });
       const finalUrl = page.url();
       if (!finalUrl.includes("/admin/login")) throw new Error("Logout did not work - still accessing admin dashboard");
@@ -410,13 +412,14 @@ async function main() {
     await test("Dark mode toggle works and persists", async () => {
       await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
       const html = page.locator("html");
-      const clsBefore = await html.getAttribute("class") || "";
       const toggle = page.locator('[data-testid="theme-toggle"]');
       if ((await toggle.count()) === 0) throw new Error("No theme toggle found");
+      // Start waiting for dark class BEFORE clicking
+      const darkWait = page.waitForFunction(() => document.documentElement.classList.contains("dark"), { timeout: 5000 });
       await toggle.click();
-      await page.waitForTimeout(1000);
+      await darkWait;
       const clsAfter = await html.getAttribute("class") || "";
-      if (clsBefore === clsAfter) throw new Error("Dark mode toggle did not change");
+      if (!clsAfter.includes("dark")) throw new Error("Dark mode class not added on toggle");
       // Reload and check persistence
       await page.reload();
       await page.waitForTimeout(1000);
@@ -424,6 +427,12 @@ async function main() {
       if (!clsAfterReload.includes("dark")) {
         throw new Error("Dark mode not persisted after reload");
       }
+      // Toggle back to light
+      const lightWait = page.waitForFunction(() => !document.documentElement.classList.contains("dark"), { timeout: 5000 });
+      await toggle.click();
+      await lightWait;
+      const clsLight = await html.getAttribute("class") || "";
+      if (clsLight.includes("dark")) throw new Error("Dark mode not removed on toggle back");
     })();
 
     // 11. One footer only

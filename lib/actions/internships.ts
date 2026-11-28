@@ -327,13 +327,25 @@ export async function createInternship(formData: FormData) {
   }
 
   // Determine status: auto-approve if company is trusted
+  const companySlug = companyName.toLowerCase().replace(/\s+/g, "-");
   const { data: company } = await supabase
     .from("companies")
     .select("is_trusted")
-    .eq("slug", companyName.toLowerCase().replace(/\s+/g, "-"))
+    .eq("slug", companySlug)
     .single();
 
   const isTrustedCompany = company?.is_trusted || false;
+
+  // Ensure company exists (FK constraint on company_slug)
+  await supabase.from("companies").upsert(
+    {
+      slug: companySlug,
+      name: companyName,
+      is_trusted: false,
+      is_sample: false,
+    },
+    { onConflict: "slug" },
+  );
 
   const { data, error } = await supabase
     .from("internships")
@@ -341,7 +353,7 @@ export async function createInternship(formData: FormData) {
       {
         title,
         company_name: companyName,
-        company_slug: companyName.toLowerCase().replace(/\s+/g, "-"),
+        company_slug: companySlug,
         company_logo_url: companyLogoUrl || null,
         company_email: submitterEmail || companyEmail || null,
         category,
