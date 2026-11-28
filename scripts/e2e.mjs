@@ -415,10 +415,9 @@ async function main() {
 
       if (!posts || posts.length === 0) {
         const body = await page.textContent("body");
-        // Extract error message from page
-        const errorMatch = body.match(/bg-destructive\/10[^>]*>([^<]+)</);
-        const errorText = errorMatch ? errorMatch[1].trim() : "unknown error";
-        throw new Error(`Post submission did not succeed. Post not found in database. Page error: "${errorText}"`);
+        const formStillPresent = await page.locator('form').count() > 0;
+        const errorText = await page.locator('div.bg-destructive\\/10').textContent().catch(() => "N/A");
+        throw new Error(`Post submission did not succeed. Post not found in database. Form still present: ${formStillPresent}. Error text: "${errorText.trim()}"`);
       }
 
       const postId = posts[0].id;
