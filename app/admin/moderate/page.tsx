@@ -30,6 +30,7 @@ export default function ModerationPage() {
   const [internships, setInternships] = useState<PendingInternship[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadPending();
@@ -62,11 +63,35 @@ export default function ModerationPage() {
         setError(result.error);
       } else {
         setInternships(internships.filter((i) => i.id !== id));
+        setSelected((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
       }
     } catch {
       setError("Action failed. Try again.");
     }
   }
+
+  async function bulkAction(action: string) {
+    const selectedArray = Array.from(selected);
+    for (const id of selectedArray) {
+      await handleAction(id, action);
+    }
+    setSelected(new Set());
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const isSelected = (id: string) => selected.has(id);
 
   if (loading) {
     return (
@@ -92,10 +117,35 @@ export default function ModerationPage() {
     <div className="min-h-screen bg-background py-8">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground text-bangla">Moderation Queue</h1>
-          <p className="text-muted-foreground text-sm">
-            {internships.length} pending internship{internships.length !== 1 ? "s" : ""} awaiting review
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground text-bangla">Moderation Queue</h1>
+            <p className="text-muted-foreground text-sm">
+              {internships.length} pending internship{internships.length !== 1 ? "s" : ""} awaiting review
+            </p>
+          </div>
+          {selected.size > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{selected.size} selected</span>
+              <button
+                onClick={() => bulkAction("approve")}
+                className="px-3 py-1.5 rounded-md bg-green-50 text-green-600 text-sm font-medium hover:bg-green-100 transition-colors"
+              >
+                Approve Selected
+              </button>
+              <button
+                onClick={() => bulkAction("reject")}
+                className="px-3 py-1.5 rounded-md bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors"
+              >
+                Reject Selected
+              </button>
+              <button
+                onClick={() => setSelected(new Set())}
+                className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          )}
         </div>
 
         {error && (
@@ -108,17 +158,39 @@ export default function ModerationPage() {
           <table className="w-full text-sm text-left border-collapse">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
+                <th className="w-8 px-3 py-3">
+                  <input
+                    type="checkbox"
+                    className="rounded border-input"
+                    onChange={() => {
+                      if (selected.size === internships.length) {
+                        setSelected(new Set());
+                      } else {
+                        setSelected(new Set(internships.map((i) => i.id)));
+                      }
+                    }}
+                    checked={selected.size === internships.length && internships.length > 0}
+                  />
+                </th>
                 <th className="pb-3 font-medium">Title</th>
-                <th className="pb-3 font-medium">Company</th>
-                <th className="pb-3 font-medium hidden sm:table-cell">Location</th>
-                <th className="pb-3 font-medium hidden sm:table-cell">Category</th>
-                <th className="pb-3 font-medium hidden sm:table-cell">Paid</th>
+                <th className="pb-3 font-medium text-muted-foreground hidden sm:table-cell">Company</th>
+                <th className="pb-3 font-medium text-muted-foreground hidden sm:table-cell">Location</th>
+                <th className="pb-3 font-medium text-muted-foreground hidden sm:table-cell">Category</th>
+                <th className="pb-3 font-medium text-muted-foreground hidden sm:table-cell">Paid</th>
                 <th className="pb-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {internships.map((job) => (
                 <tr key={job.id} className="border-b border-border/50 hover:bg-secondary/50">
+                  <td className="py-3">
+                    <input
+                      type="checkbox"
+                      className="rounded border-input"
+                      checked={isSelected(job.id)}
+                      onChange={() => toggleSelect(job.id)}
+                    />
+                  </td>
                   <td className="py-3">
                     <div className="font-medium text-foreground">{job.title}</div>
                     <div className="text-xs text-muted-foreground mt-1">
