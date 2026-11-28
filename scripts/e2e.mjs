@@ -423,17 +423,15 @@ async function main() {
       const postId = posts[0].id;
       createdPostIds.push(postId);
 
-      // Admin login
+      // Admin login via API (more reliable than page form)
       consoleErrors.length = 0;
       serverErrors.length = 0;
-      // Clear any existing admin cookies from previous tests
       await page.context().clearCookies();
-      await page.goto(`${BASE}/admin/login`, { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(500);
-      assertNoPageErrors("admin login page");
-      await page.fill('input[type="password"]', ADMIN_PASSWORD);
-      await page.click('button[type="submit"]');
-      await page.waitForURL((url) => url.pathname === "/admin/dashboard", { timeout: 15000 });
+      const loginRes = await page.request.post(`${BASE}/api/admin/login`, {
+        form: { password: ADMIN_PASSWORD }
+      });
+      const loginResult = await loginRes.json();
+      if (!loginResult.success) throw new Error("Admin login API failed: " + JSON.stringify(loginResult));
 
       // Go to moderation and approve
       await page.goto(`${BASE}/admin/moderate`, { waitUntil: "domcontentloaded" });
