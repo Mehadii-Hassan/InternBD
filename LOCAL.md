@@ -1,24 +1,28 @@
 # Local Development - InternBD
 
-## 3 Steps to View the Site in VS Code
+## View the Site in VS Code (Two-Terminal Setup)
 
-1. **Run the dev task**: Press `Ctrl+Shift+P` > "Tasks: Run Task" > "Start InternBD" (or run `npm run dev` in terminal)
-2. **Open Simple Browser**: Press `Ctrl+Shift+P` > "Simple Browser: Show" > enter `http://localhost:3000`
-3. **Mobile view**: In Simple Browser, use the device toolbar or resize the window to test mobile layouts
+**Terminal 1** — Start the dev server:
+```
+npm run dev
+```
+Wait until it prints `Ready in ...` and `Local: http://localhost:3000`.
 
-## Run Tests
-
-**E2E tests** (requires dev server on port 3000; script starts/stops it automatically):
+**Terminal 2** — Run E2E tests:
 ```
 node scripts/e2e.mjs
 ```
 
-**Screenshots** (requires dev server on port 3000; script starts/stops it automatically):
+**Terminal 2** — Take screenshots (light/dark, desktop/mobile, saved to `/screenshots` which is gitignored):
 ```
 node scripts/shots.mjs
 ```
 
-Screenshots are saved to `/screenshots` (gitignored).
+Both scripts check that `http://localhost:3000` is reachable before running. If it is not, they print:
+```
+Start the server first: npm run dev (in another terminal), then run this again.
+```
+and exit.
 
 ## Available Pages
 
